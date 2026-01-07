@@ -24,5 +24,4 @@ logs
 !.env.example
 
 # FTP credentials
-utils/ftpConfig.ts
 node_modules
