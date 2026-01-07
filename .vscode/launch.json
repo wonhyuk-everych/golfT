@@ -42,6 +42,22 @@
         "--ignore-certificate-errors"
       ],
       "timeout": 30000
+    },
+    {
+      "name": "Attach to Chrome (프론트엔드 수동 실행 후)",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*"
+      }
     }
   ],
   "compounds": [

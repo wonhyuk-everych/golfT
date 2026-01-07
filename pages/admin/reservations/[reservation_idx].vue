@@ -151,7 +151,7 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
               <div><span class="text-gray-500">골프장</span> <div class="font-medium">{{ g.name_kr }}</div></div>
-              <div><span class="text-gray-500">예약일</span> <div>{{ formatDateLocale(g.reservation_date, locale.value) }}</div></div>
+              <div><span class="text-gray-500">예약일</span> <div>{{ formatDateBookingDay(g.reservation_date, locale.value) }}</div></div>
               <div>
                 <span class="text-gray-500">예약 시간</span> 
                 <div v-if="g.start_time && g.end_time">
@@ -341,7 +341,7 @@
 import { ref, onMounted } from '#imports'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { formatDateLocale } from '~/utils/formatters'
+import { formatDateLocale, formatDateBookingDay } from '~/utils/formatters'
 
 definePageMeta({
   layout: 'admin',

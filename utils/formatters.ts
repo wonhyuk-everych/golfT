@@ -1,3 +1,5 @@
+import moment from 'moment-timezone'
+
 /**
  * 날짜를 한국어 형식으로 포맷팅합니다.
  * @param date 포맷팅할 Date 객체
@@ -145,18 +147,16 @@ export function formatTimeToAmPm(time: string): string {
   return `${period} ${hour}`;
 }
 
-
-// Format date to display in localized format
 export function formatDateLocale(dateString: string, locale: string = 'ko') {
   if (!dateString) return ''
   
   const date = new Date(dateString)
-  
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
   if (locale === 'ko') {
     // Korean format: YYYY.MM.DD (요일)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
     
     // Get day of week in Korean
     const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
@@ -165,6 +165,30 @@ export function formatDateLocale(dateString: string, locale: string = 'ko') {
   } else {
     // English format: MMM DD, YYYY
     const dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]
+    return `${year}-${month}-${day} (${dayOfWeek})`
+  }
+}
+
+// Format date to display in localized format
+export function formatDateBookingDay(dateString: string, locale: string = 'ko') {
+  if (!dateString) return ''
+  
+  // UTC로 온 값을 KST(Asia/Seoul)로 변환
+  const utcMoment = moment.utc(dateString)
+  const kstMoment = utcMoment.tz('Asia/Seoul')
+  
+  const year = kstMoment.year()
+  const month = String(kstMoment.month() + 1).padStart(2, '0') // moment는 0-11, +1 필요
+  const day = String(kstMoment.date()).padStart(2, '0')
+  const dayOfWeekIndex = kstMoment.day() // 0(일) ~ 6(토)
+
+  if (locale === 'ko') {
+    // Korean format: YYYY.MM.DD (요일)
+    const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][dayOfWeekIndex]
+    return `${year}.${month}.${day} (${dayOfWeek})`
+  } else {
+    // English format: YYYY-MM-DD (요일)
+    const dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeekIndex]
     return `${year}-${month}-${day} (${dayOfWeek})`
   }
 }
