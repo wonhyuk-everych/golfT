@@ -1,0 +1,54 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Nuxt Dev (Debug)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "/Users/everych/.nvm/versions/node/v18.20.8/bin/npm",
+      "runtimeArgs": ["run", "dev"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "serverReadyAction": {
+        "pattern": "Local:.*https://.*:3000",
+        "uriFormat": "https://localhost:3000",
+        "action": "openExternally"
+      },
+      "env": {
+        "NODE_OPTIONS": "--inspect=127.0.0.1:9229"
+      },
+      "restart": true
+    },
+    {
+      "name": "Debug with Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "https://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*"
+      },
+      "runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "runtimeArgs": [
+        "--remote-debugging-port=9222",
+        "--disable-web-security",
+        "--ignore-certificate-errors"
+      ],
+      "timeout": 30000
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Nuxt Full Stack Debug (F5)",
+      "configurations": ["Nuxt Dev (Debug)", "Debug with Chrome"],
+      "stopAll": true
+    }
+  ]
+}

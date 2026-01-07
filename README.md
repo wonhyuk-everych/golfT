@@ -9,6 +9,7 @@
 - Backend: Nuxt Nitro(Server Routes), TypeScript
 - Data: MySQL(`mysql2`), 일부 Admin 영역 Prisma 사용
 - i18n: `locales/` 기반 다국어(ko/en)
+- node 18.20.8
 
 ## 프로젝트 구조(요약)
 - `pages/`: 라우팅 페이지(사용자/어드민)
@@ -85,7 +86,7 @@ sudo certbot certificates
 ### https 인증서 갱신
 sudo certbot renew
 
-### https 인증서 자동 갱신
+### https 인증서 갱신 가능한지 확인하는 과정
 sudo certbot renew --dry-run
 
 ### https 인증서 자동 갱신 설정

@@ -1,0 +1,460 @@
+---
+trigger: manual
+---
+
+# 골프장, 호텔, 캐디 예약 시스템 프로젝트 분석 보고서
+
+## 프로젝트 개요
+
+**프로젝트명**: 골프 T (Golf T)  
+**기술 스택**: Nuxt 3, Vue 3, TypeScript, MySQL, Tailwind CSS  
+**주요 기능**: 골프장, 호텔, 캐디 예약 및 결제 시스템  
+**국제화**: 한국어/영어 지원  
+**결제**: Toss Payments 연동  
+
+## 아키텍처 분석
+
+### 1. 프론트엔드 구조
+
+#### 페이지 라우팅 구조 (pages/)
+```
+pages/
+├── index.vue                    # 메인 홈페이지
+├── login.vue                    # 로그인 페이지
+├── profile.vue                  # 프로필 페이지
+├── search.vue                   # 통합 검색 페이지
+├── terms.vue                    # 약관 페이지
+├── admin/                       # 관리자 페이지들
+├── ai/                         # AI 관련 페이지
+├── best30/                     # 베스트 30 추천
+├── caddy/                      # 캐디 관련 페이지
+├── community/                  # 커뮤니티 페이지
+├── course/                     # 골프장 페이지
+├── event/                      # 이벤트 페이지
+├── hotel/                      # 호텔 페이지
+├── mypage/                     # 마이페이지
+├── notice/                     # 공지사항
+├── payment/                    # 결제 페이지
+├── qna/                        # Q&A 페이지
+├── reservation/                # 예약 관리
+├── review/                     # 리뷰 페이지
+├── settings/                   # 설정 페이지
+├── shopping_cart/              # 장바구니
+├── tournament/                 # 토너먼트
+└── wish/                       # 위시리스트
+```
+
+#### 컴포넌트 구조 (components/)
+```
+components/
+├── TossPaymentButton.vue       # Toss 결제 버튼 컴포넌트
+├── admin/                      # 관리자 전용 컴포넌트
+├── caddy/                      # 캐디 관련 컴포넌트
+├── common/                     # 공통 컴포넌트
+│   ├── NavigationBar.vue       # 네비게이션 바
+│   ├── Footer.vue              # 푸터
+│   ├── CategorySection.vue     # 카테고리 섹션
+│   └── ProductShopSection.vue  # 상품 목록 섹션
+├── community/                  # 커뮤니티 컴포넌트
+├── course/                     # 골프장 컴포넌트
+├── hotel/                      # 호텔 컴포넌트
+├── main/                       # 메인 페이지 컴포넌트
+├── payment/                    # 결제 관련 컴포넌트
+├── qna/                        # Q&A 컴포넌트
+├── reservation/                # 예약 관련 컴포넌트
+├── shopping_cart/              # 장바구니 컴포넌트
+└── tournament/                 # 토너먼트 컴포넌트
+```
+
+#### 컴포저블 함수 (composables/)
+```
+composables/
+├── useAuthSession.ts           # 인증 세션 관리
+├── useFetchApi.ts             # API 호출 공통 함수
+├── useGlobalI18n.ts           # 글로벌 다국어 처리
+├── useGolfCourse.ts           # 골프장 관련 로직
+├── useGolfCourseInfo.ts       # 골프장 상세 정보
+├── useI18n.ts                 # 다국어 처리
+├── useLayout.ts               # 레이아웃 관리
+├── useLocalization.ts         # 로컬라이제이션
+├── useUser.ts                 # 사용자 정보 관리
+├── admin/                     # 관리자 전용 컴포저블
+├── api/                       # API 관련 컴포저블
+└── auth/                      # 인증 관련 컴포저블
+```
+
+#### 레이아웃 시스템 (layouts/)
+```
+layouts/
+├── default.vue                # 기본 레이아웃 (헤더, 푸터 포함)
+├── admin.vue                  # 관리자 레이아웃
+└── blank.vue                  # 빈 레이아웃 (로그인 등)
+```
+
+#### 미들웨어 (middleware/)
+```
+middleware/
+└── auth.ts                    # 인증 미들웨어 (로그인 체크)
+```
+
+#### 유틸리티 함수 (utils/)
+```
+utils/
+├── formatters.ts              # 날짜, 가격, 시간 포맷팅
+├── ftpConfig.ts              # FTP 설정
+└── ftpUtils.ts               # FTP 유틸리티
+```
+
+### 2. 백엔드 구조
+
+#### API 엔드포인트 구조 (server/api/)
+```
+server/api/
+├── terms.ts                   # 약관 API
+├── admin/                     # 관리자 API
+│   ├── city-codes.ts         # 도시 코드 관리
+│   ├── country-codes.ts      # 국가 코드 관리
+│   ├── caddy/               # 캐디 관리
+│   ├── community/           # 커뮤니티 관리
+│   ├── courses/             # 골프장 관리
+│   ├── event/               # 이벤트 관리
+│   ├── hotel/               # 호텔 관리
+│   ├── member/              # 회원 관리
+│   ├── notice/              # 공지사항 관리
+│   ├── qna/                 # Q&A 관리
+│   ├── recommend/           # 추천 관리
+│   ├── reservations/        # 예약 관리
+│   ├── tournament/          # 토너먼트 관리
+│   └── upload/              # 파일 업로드
+├── ai/                       # AI 관련 API
+│   ├── ai_data.json         # AI 데이터
+│   └── search.ts            # AI 검색
+├── auth/                     # 인증 API
+│   ├── check-session.get.ts # 세션 확인
+│   ├── login.post.ts        # 로그인
+│   ├── logout.post.ts       # 로그아웃
+│   ├── google-callback.ts   # 구글 OAuth 콜백
+│   ├── kakao-callback.ts    # 카카오 OAuth 콜백
+│   └── naver-callback.ts    # 네이버 OAuth 콜백
+├── caddy/                    # 캐디 API
+│   ├── [id].ts              # 캐디 상세 정보
+│   ├── add-cart.ts          # 장바구니 추가
+│   ├── review.ts            # 캐디 리뷰
+│   └── city/                # 도시별 캐디
+├── community/                # 커뮤니티 API
+│   ├── [id].ts              # 게시글 상세
+│   ├── regions.ts           # 지역 정보
+│   ├── search.ts            # 게시글 검색
+│   ├── comment/             # 댓글 관리
+│   ├── comments/            # 댓글 목록
+│   └── post/                # 게시글 관리
+├── event/                    # 이벤트 API
+│   ├── [id].ts              # 이벤트 상세
+│   └── search.ts            # 이벤트 검색
+├── golf-course/              # 골프장 API
+│   ├── [id].ts              # 골프장 상세
+│   ├── index.ts             # 골프장 목록
+│   ├── add-cart.ts          # 장바구니 추가
+│   ├── price.ts             # 가격 정보
+│   ├── reservation.ts       # 예약 처리
+│   ├── review.ts            # 골프장 리뷰
+│   ├── types.ts             # 골프장 타입
+│   ├── callvan/             # 콜밴 서비스
+│   └── city/                # 도시별 골프장
+├── hotel/                    # 호텔 API
+│   ├── [id].ts              # 호텔 상세
+│   ├── add-cart.ts          # 장바구니 추가
+│   ├── review.ts            # 호텔 리뷰
+│   ├── room_info.ts         # 객실 정보
+│   ├── room.ts              # 객실 관리
+│   └── city/                # 도시별 호텔
+├── member/                   # 회원 API
+│   ├── [id].get.ts          # 회원 정보 조회
+│   ├── [id].put.ts          # 회원 정보 수정
+│   └── withdrawal.ts        # 회원 탈퇴
+├── notice/                   # 공지사항 API
+│   ├── [id].ts              # 공지사항 상세
+│   └── search.ts            # 공지사항 검색
+├── payment/                  # 결제 API
+│   ├── check.ts             # 결제 검증
+│   ├── complete.ts          # 결제 완료
+│   ├── bart-rate.ts         # 환율 정보
+│   ├── terms.ts             # 결제 약관
+│   └── complete/            # 결제 완료 처리
+├── qna/                      # Q&A API
+│   ├── add.ts               # Q&A 등록
+│   ├── detail.ts            # Q&A 상세
+│   ├── list.ts              # Q&A 목록
+│   └── qna-types.ts         # Q&A 타입
+├── recommend/                # 추천 API
+│   ├── best30.ts            # 베스트 30
+│   ├── main_caddy.ts        # 메인 캐디 추천
+│   ├── main_golf_course.ts  # 메인 골프장 추천
+│   └── main_hotel.ts        # 메인 호텔 추천
+├── reservation/              # 예약 API
+│   ├── index.ts             # 예약 목록
+│   ├── [reservation_id].ts  # 예약 상세
+│   ├── refund.ts            # 환불 처리
+│   └── [type]/              # 예약 타입별 처리
+├── review/                   # 리뷰 API
+│   ├── create.ts            # 리뷰 작성
+│   ├── list.ts              # 리뷰 목록
+│   ├── update.ts            # 리뷰 수정
+│   └── product/             # 상품별 리뷰
+├── search/                   # 검색 API
+│   └── index.ts             # 통합 검색
+├── shopping-cart/            # 장바구니 API
+│   ├── index.ts             # 장바구니 목록
+│   └── delete.ts            # 장바구니 삭제
+├── tournament/               # 토너먼트 API
+│   ├── [id].ts              # 토너먼트 상세
+│   ├── add-cart.ts          # 장바구니 추가
+│   ├── reservation.ts       # 토너먼트 예약
+│   └── search.ts            # 토너먼트 검색
+└── wish/                     # 위시리스트 API
+    ├── add.ts               # 위시리스트 추가
+    ├── list.ts              # 위시리스트 목록
+    └── remove.ts            # 위시리스트 제거
+```
+
+#### 서버 설정 및 유틸리티 (server/)
+```
+server/
+├── config/                   # 서버 설정 파일
+├── middleware/               # 서버 미들웨어
+├── routes/                   # 라우트 설정
+├── sql/                      # SQL 쿼리 파일
+├── utils/
+│   └── db.ts                # 데이터베이스 연결 유틸리티
+└── tsconfig.json            # TypeScript 설정
+```
+
+## 주요 도메인 분석
+
+### 1. 골프장 (Golf Course)
+- **기능**: 골프장 목록, 상세 정보, 예약
+- **API**: `/api/golf-course/`
+- **특징**: 
+  - 다국어 지원 (locale_text 테이블 조인)
+  - 이미지 갤러리
+  - 리뷰 및 평점 시스템
+  - 위시리스트 기능
+  - 최저가 표시
+
+### 2. 호텔 (Hotel)
+- **기능**: 호텔 목록, 상세 정보, 예약
+- **API**: `/api/hotel/`
+- **특징**:
+  - 객실 타입별 정보
+  - 부대시설 정보
+  - 교통편 안내
+  - 추가 요금 정보
+  - 주의사항
+
+### 3. 캐디 (Caddy)
+- **기능**: 캐디 목록, 상세 정보, 예약
+- **API**: `/api/caddy/`
+- **특징**:
+  - 캐디 프로필 정보
+  - 전문 분야
+  - 언어 능력
+  - 리뷰 시스템
+
+## 인증 및 세션 관리
+
+### 1. 인증 방식
+- **일반 로그인**: 이메일/비밀번호
+- **소셜 로그인**: 카카오, 구글, 네이버
+- **세션 관리**: nuxt-auth-utils 사용
+
+### 2. 권한 관리
+- **일반 사용자**: 예약, 리뷰 작성
+- **관리자**: 상품 관리, 예약 관리
+- **미들웨어**: `/admin/*` 경로 보호
+
+### 3. 주요 API
+```typescript
+// 로그인
+POST /api/auth/login
+// 세션 확인
+GET /api/auth/check-session
+// 로그아웃
+POST /api/auth/logout
+// 소셜 로그인 콜백
+GET /api/auth/kakao-callback
+GET /api/auth/google-callback
+```
+
+## 국제화 (i18n) 시스템
+
+### 1. 설정
+- **모듈**: @nuxtjs/i18n
+- **지원 언어**: 한국어(ko), 영어(en)
+- **기본 언어**: 한국어
+- **쿠키**: i18n_redirected
+
+### 2. 번역 파일 구조
+```
+locales/
+├── ko/
+│   └── index.json
+└── en/
+    └── index.json
+```
+
+### 3. 서버사이드 다국어 처리
+- 쿠키에서 언어 설정 읽기
+- locale_text 테이블과 조인하여 다국어 콘텐츠 제공
+
+## 데이터베이스 설계
+
+### 1. 주요 테이블
+- **member**: 회원 정보
+- **golf_course**: 골프장 정보
+- **hotel**: 호텔 정보
+- **caddy**: 캐디 정보
+- **locale_text**: 다국어 텍스트
+- **reservation_***: 예약 관련 테이블들
+- **shopping_cart_***: 장바구니 관련
+- **review**: 리뷰 정보
+
+### 2. 데이터베이스 연결
+- **드라이버**: mysql2
+- **연결 방식**: Connection Pool
+- **위치**: `server/utils/db.ts`
+
+## 결제 시스템
+
+### 1. Toss Payments 연동
+- **클라이언트 키**: 테스트 환경 설정
+- **결제 플로우**:
+  1. 주문 검증 (`/api/payment/check`)
+  2. 결제 처리 (Toss Payments)
+  3. 결제 완료 (`/api/payment/complete`)
+
+### 2. 예약 생성 프로세스
+```typescript
+// 1. 결제 검증
+POST /api/payment/check
+// 2. 결제 완료 처리
+POST /api/payment/complete
+// 3. 예약 데이터 생성 (트랜잭션)
+```
+
+## 주요 컴포넌트 분석
+
+### 1. 공통 컴포넌트
+- **NavigationBar**: 네비게이션 바
+- **Footer**: 푸터
+- **CategorySection**: 카테고리 섹션
+- **ProductShopSection**: 상품 목록 섹션
+
+### 2. 도메인별 컴포넌트
+```
+components/
+├── admin/           # 관리자 컴포넌트
+├── course/          # 골프장 컴포넌트
+├── hotel/           # 호텔 컴포넌트
+├── caddy/           # 캐디 컴포넌트
+├── payment/         # 결제 컴포넌트
+├── reservation/     # 예약 컴포넌트
+└── common/          # 공통 컴포넌트
+```
+
+## 유틸리티 함수
+
+### 1. 포맷터 (formatters.ts)
+- **날짜 포맷팅**: 한국어/영어 형식
+- **가격 포맷팅**: 원화/바트 표시
+- **시간 포맷팅**: 24시간제 → 오전/오후
+
+### 2. API 호출 (useFetchApi.ts)
+- **공통 설정**: 헤더, 에러 처리
+- **인증 처리**: 토큰 자동 포함
+- **에러 핸들링**: 상태 코드별 처리
+
+## 보안 고려사항
+
+### 1. 현재 이슈
+- **하드코딩된 시크릿**: DB 연결 정보, OAuth 키
+- **환경 변수 미사용**: 민감 정보 노출 위험
+
+### 2. 권장 개선사항
+- 환경 변수로 시크릿 관리
+- HTTPS 강제 적용
+- 입력 값 검증 강화
+- SQL 인젝션 방지
+
+## 성능 최적화
+
+### 1. 현재 구현
+- **이미지 최적화**: 필요
+- **캐싱**: 구현 필요
+- **번들 최적화**: Nuxt 3 기본 제공
+
+### 2. 개선 방안
+- 이미지 CDN 도입
+- API 응답 캐싱
+- 데이터베이스 쿼리 최적화
+
+## 개발 환경 설정
+
+### 1. 개발 서버
+```bash
+# 개발 모드
+npm run dev
+# 빌드
+npm run build
+# 프로덕션 시작
+npm run start
+```
+
+### 2. HTTPS 설정
+- 로컬 인증서: `certs/` 디렉토리
+- 개발/프로덕션 모두 HTTPS 지원
+
+## 배포 및 운영
+
+### 1. 시스템 서비스
+- **서비스 파일**: `doc/apl-golf.service`
+- **관리 명령어**:
+  ```bash
+  sudo systemctl start apl-golf
+  sudo systemctl restart apl-golf
+  sudo systemctl status apl-golf
+  ```
+
+### 2. 웹 서버
+- **Nginx**: 리버스 프록시
+- **SSL**: Let's Encrypt (certbot)
+- **자동 갱신**: crontab 설정
+
+### 3. 환율 정보
+- **스크립트**: `money_exchange.py`
+- **스케줄링**: crontab (매일 자정)
+
+## 아키텍처 특징 및 패턴
+
+### 1. RESTful API 설계
+- **리소스별 명확한 엔드포인트 구조**: 각 도메인(골프장, 호텔, 캐디)별로 독립적인 API 구조
+- **HTTP 메서드 활용**: GET, POST, PUT, DELETE를 적절히 활용한 CRUD 작업
+- **동적 라우팅**: `[id].ts`, `[type].ts` 패턴을 통한 유연한 라우팅 구조
+
+### 2. 모듈화된 컴포넌트 구조
+- **도메인별 컴포넌트 분리**: 각 비즈니스 도메인별로 독립적인 컴포넌트 구조
+- **공통 컴포넌트 재사용**: NavigationBar, Footer 등 공통 UI 컴포넌트 활용
+- **컴포저블을 통한 로직 분리**: Vue 3 Composition API를 활용한 비즈니스 로직 분리
+
+### 3. 타입 안전성
+- **TypeScript 전면 적용**: 프론트엔드와 백엔드 모두 TypeScript 사용
+- **API 응답 타입 정의**: 서버 응답에 대한 명확한 타입 정의
+- **컴포넌트 props 타입 정의**: Vue 컴포넌트의 타입 안전성 보장
+
+### 4. 국제화 지원 아키텍처
+- **페이지별 다국어 처리**: 각 페이지에서 독립적인 다국어 처리
+- **서버사이드 다국어 데이터**: locale_text 테이블을 통한 서버사이드 다국어 지원
+- **쿠키 기반 언어 설정**: 사용자 언어 설정의 지속성 보장
+
+## 결론
+
+이 프로젝트는 Nuxt 3 기반의 현대적인 웹 애플리케이션으로, 골프장, 호텔, 캐디 예약 서비스를 제공합니다. 다국어 지원, 소셜 로그인, 결제 시스템 등 핵심 기능이 잘 구현되어 있으나, 보안과 성능 측면에서 개선이 필요합니다. 특히 환경 변수 관리와 데이터베이스 최적화를 우선적으로 진행하는 것을 권장합니다.
