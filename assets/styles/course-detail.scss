@@ -1,0 +1,427 @@
+@use './_variables.scss' as *;
+
+.course-detail-container {
+  max-width: $width-lg;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+
+  .image-section {
+    flex: 0 0 65%;
+    margin-bottom: 0;
+
+    .image-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: $white-color;
+      margin-bottom: 10px;
+
+      .main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .nav-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba($secondary-color, 0.5);
+        color: $white-color;
+        border: none;
+        padding: 15px;
+        cursor: pointer;
+        font-size: 24px;
+        z-index: 2;
+
+        &.prev { left: 0; }
+        &.next { right: 0; }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .image-thumbnails {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+
+      .thumbnail {
+        flex: 0 0 100px;
+        height: 60px;
+        border-radius: 4px;
+        overflow: hidden;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+
+        &:hover {
+          opacity: 0.9;
+        }
+
+        &.active {
+          opacity: 1;
+          outline: 2px solid $third-color;
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+
+  .info-section {
+    flex: 1;
+    padding-top: 0;
+
+    .course-name {
+      font-size: $font-title;
+      font-weight: bold;
+      margin-bottom: $spacing-lg;
+      color: $text-color;
+    }
+
+    .course-info {
+      .course-rating {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        margin-bottom: $spacing-xs;
+
+        .star {
+          color: #fbbf24;
+        }
+
+        .rating-text {
+          color: $secondary-color;
+          font-size: $font-sm;
+        }
+      }
+
+      .course-name {
+        font-size: $font-lg;
+        font-weight: 500;
+        color: $text-color;
+      }
+
+      .airport-info {
+        display: inline-block;
+        min-width: max-content;
+        border: 1px solid white;
+        background-color: $third-color;
+        margin-top: $spacing-lg;
+        font-size: $font-sm;
+        color: $white-color;
+        padding: 5px 10px;
+        border-radius: 0.5rem;
+      }
+
+      .website-section{
+        font-size: $font-sm;
+        color: $secondary-color;
+        margin-top: $spacing-lg;
+        font-style: underline;
+      }
+
+      .price-section {
+        margin-top: $spacing-md;
+
+        .price-container {
+          text-align: right;
+
+          .price-label {
+            font-size: $font-sm;
+            color: $secondary-color;
+
+            .price-amount {
+              font-size: $font-lg;
+              color: $third-color;
+            }
+            
+            .price-amount-bart {
+              font-size: $font-lg;
+              color: $text-color;
+            } 
+          }
+        }
+      }
+    }
+  }
+}
+
+.resevation-container {
+  max-width: $width-lg;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+
+  .reservation-action-section {
+    flex: 0 0 65%;
+
+    .callben-button {
+      padding-top: 0px !important;
+      padding-bottom: 0px !important;
+      .callben-sub-button {
+        width: 30%;
+      }
+    }
+
+    .reservation-button {
+      position: relative;
+      width: 100%;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      border-top: 1px solid $secondary-color;
+      background: $white-color;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .reservation-button:hover {
+      border-color: $third-color;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .reservation-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      
+      td {
+        padding: 12px;
+        vertical-align: middle;
+      }
+    }
+
+    .reservation-label {
+      color: $secondary-color;
+      width: 60%;
+    }
+
+    .reservation-select {
+      color: $third-color;
+      font-size: $font-base;
+      text-align: right;
+      width: 40%;
+    }
+
+    .reservation-sub-button{
+      color: $secondary-color;
+      font-size: $font-base;
+      text-align: center;
+      border: 1px solid $secondary-color;
+      background: $white-color;
+      cursor: pointer;
+      padding: 20px;
+      border-radius: 8px;
+      width: 20%;
+      margin: 10px;
+    }
+
+    .reservation-sub-button:hover {
+      color: $third-color;
+      background: $background-color;
+    }
+
+    .reservation-sub-button.active {
+      background: $third-color;
+      color: $white-color;
+    }
+  }
+
+  .reservation-info-section {
+    background: $white-color;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 0 0 35%;
+
+    .reservation-info-container {
+      .reservation-course-name {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+
+      .reservation-datetime {
+        color: $third-color;
+        font-size: $font-base;
+        margin-bottom: 16px;
+      }
+
+      .fee-breakdown {
+        border-top: 1px solid #eee;
+        padding-top: 16px;
+        font-size: $font-base;
+
+        .fee-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8px;
+          
+          .fee-label {
+            color: $secondary-color;
+          }
+          
+          .fee-amount {
+            font-weight: 500;
+            color: $third-color;
+          }
+
+          .fee-amount-bart {
+            font-weight: 500;
+            color: $secondary-color;
+          }
+        }
+
+        .fee-total {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid #eee;
+          font-weight: bold;
+          font-size: $font-base;
+
+          .fee-amount {
+            font-weight: 500;
+            color: $third-color;
+          }
+
+          .fee-amount-bart {
+            font-weight: 500;
+            color: $secondary-color;
+          }
+        }
+      }
+
+      .action-buttons {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .action-button {
+          width: 100%;
+          padding: 12px;
+          border-radius: 6px;
+          border: none;
+          cursor: pointer;
+          font-weight: 500;
+
+          &.primary {
+            background: $third-color;
+            color: $white-color;
+          }
+
+          &.secondary {
+            background: #fae100;
+            color: #000;
+          }
+        }
+      }
+
+      .bart-price {
+        color: $secondary-color;
+        font-size: $font-sm;
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .course-detail-container {
+    flex-direction: column;
+    
+    .image-section {
+      flex: none;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .info-section {
+      width: 100%;
+    }
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0066cc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  color: #ef4444;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.extra-images-section {
+  max-width: $width-lg;
+  margin: 40px auto;
+  padding: 0 20px;
+
+  .section-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .extra-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    
+    .extra-image-item {
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+        
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+}

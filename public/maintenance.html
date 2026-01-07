@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>서비스 점검 중 | Service Maintenance</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/favicon.ico" />
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    :root {
+      /* Light theme aligned with layouts/default.vue */
+      --bg: #F0F3F7;          /* base background */
+      --card: #ffffff;        /* card background */
+      --text: #1f2937;        /* gray-800 */
+      --muted: #6b7280;       /* gray-600 */
+      --border: #e5e7eb;      /* gray-200 */
+      --accent: #22c55e;      /* green-500 */
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans KR, Apple SD Gothic Neo, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 720px;
+      padding: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .logo {
+      height: 56px;
+      width: auto;
+      margin-bottom: 18px;
+      object-fit: contain;
+    }
+    .title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 8px 0 6px;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(34,197,94,0.10);
+      margin-bottom: 16px;
+      font-size: 0.875rem;
+    }
+    .notice {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: left;
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+    .notice strong { color: #111827; }
+    .divider { height: 1px; background: rgba(0,0,0,0.06); margin: 16px 0; }
+    .tips { color: var(--muted); font-size: 0.9rem; }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Responsive tweaks */
+    @media (min-width: 640px) {
+      .title { font-size: 1.75rem; }
+      .logo { height: 64px; }
+      .card { padding: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="card" role="status" aria-live="polite">
+      <img class="logo" src="images/logo.png" alt="서비스 로고" />
+      <h1 class="title">서비스 점검 중입니다</h1>
+      <p class="subtitle">보다 안정적인 서비스를 위해 일시적으로 접속이 제한됩니다.</p>
+
+      <div class="notice">
+        <p><strong>잠시만 기다려 주세요.</strong> 현재 시스템 점검을 진행하고 있습니다. 점검이 완료되는 대로 자동으로 다시 접속을 시도하거나, 잠시 후 새로고침 해주세요.</p>
+        <div class="divider"></div>
+        <p><strong>We’ll be back soon.</strong> We’re performing scheduled maintenance. Please try again in a few minutes.</p>
+      </div>
+
+      <p class="footer">문의가 필요하신 경우, 최근 공지 또는 고객센터를 참고해 주세요.</p>
+      <p class="tips">If you continue to see this page for an extended time, clear your cache and refresh.</p>
+    </section>
+  </main>
+  <script>
+    // Optional: light auto-retry to help users once the app returns
+    (function retry() {
+      var RETRY_MS = 15000; // 15s
+      setTimeout(function(){ location.reload(); }, RETRY_MS);
+    })();
+  </script>
+</body>
+</html>

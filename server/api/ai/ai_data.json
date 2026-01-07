@@ -1,0 +1,546 @@
+{
+          "golf_packages": {
+                    "방콕": {
+                              "4회": {
+                                        "최상급": {
+                                                  "package_id": 1,
+                                                  "location": "방콕",
+                                                  "rounds": "4회",
+                                                  "grade": "최상급",
+                                                  "courses": [
+                                                            "시암 컨트리 클럽 방콕",
+                                                            "니칸티 골프 클럽",
+                                                            "알파인 골프 앤 스포츠 클럽",
+                                                            "타이 컨트리 골프 앤 컨트리 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                5350,
+                                                                                5100,
+                                                                                4550,
+                                                                                4300
+                                                                      ],
+                                                                      "total": 19300
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                240750,
+                                                                                229500,
+                                                                                204750,
+                                                                                193500
+                                                                      ],
+                                                                      "total": 868500
+                                                            }
+                                                  }
+                                        },
+                                        "상급": {
+                                                  "package_id": 2,
+                                                  "location": "방콕",
+                                                  "rounds": "4회",
+                                                  "grade": "상급",
+                                                  "courses": [
+                                                            "피닉스 골드 골프 방콕",
+                                                            "로얄 방파인 골프 클럽",
+                                                            "수완 골프 앤 컨트리 클럽",
+                                                            "판야 인드라 골프 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2500,
+                                                                                2950,
+                                                                                2550,
+                                                                                3450
+                                                                      ],
+                                                                      "total": 11450
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                112500,
+                                                                                132750,
+                                                                                114750,
+                                                                                155250
+                                                                      ],
+                                                                      "total": 515250
+                                                            }
+                                                  }
+                                        },
+                                        "가성비": {
+                                                  "package_id": 3,
+                                                  "location": "방콕",
+                                                  "rounds": "4회",
+                                                  "grade": "가성비",
+                                                  "courses": [
+                                                            "람룩카 컨트리 클럽",
+                                                            "라차캄 골프 클럽",
+                                                            "카스카타 골프 클럽",
+                                                            "더 파인 골프 앤 로지"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2000,
+                                                                                1850,
+                                                                                2050,
+                                                                                1850
+                                                                      ],
+                                                                      "total": 7750
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                90000,
+                                                                                83250,
+                                                                                92250,
+                                                                                83250
+                                                                      ],
+                                                                      "total": 348750
+                                                            }
+                                                  }
+                                        }
+                              },
+                              "3회": {
+                                        "최상급": {
+                                                  "package_id": 4,
+                                                  "location": "방콕",
+                                                  "rounds": "3회",
+                                                  "grade": "최상급",
+                                                  "courses": [
+                                                            "타이 컨트리 골프 앤 컨트리 클럽",
+                                                            "니칸티 골프 클럽",
+                                                            "알파인 골프 앤 스포츠 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                4300,
+                                                                                5100,
+                                                                                4550
+                                                                      ],
+                                                                      "total": 13950
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                193500,
+                                                                                229500,
+                                                                                204750
+                                                                      ],
+                                                                      "total": 627750
+                                                            }
+                                                  }
+                                        },
+                                        "상급": {
+                                                  "package_id": 5,
+                                                  "location": "방콕",
+                                                  "rounds": "3회",
+                                                  "grade": "상급",
+                                                  "courses": [
+                                                            "피닉스 골드 골프 방콕",
+                                                            "로얄 방파인 골프 클럽",
+                                                            "수완 골프 앤 컨트리 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2500,
+                                                                                2950,
+                                                                                2550
+                                                                      ],
+                                                                      "total": 8000
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                112500,
+                                                                                132750,
+                                                                                114750
+                                                                      ],
+                                                                      "total": 360000
+                                                            }
+                                                  }
+                                        },
+                                        "가성비": {
+                                                  "package_id": 6,
+                                                  "location": "방콕",
+                                                  "rounds": "3회",
+                                                  "grade": "가성비",
+                                                  "courses": [
+                                                            "람룩카 컨트리 클럽",
+                                                            "라차캄 골프 클럽",
+                                                            "카스카타 골프 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2000,
+                                                                                1850,
+                                                                                2050
+                                                                      ],
+                                                                      "total": 5900
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                90000,
+                                                                                83250,
+                                                                                92250
+                                                                      ],
+                                                                      "total": 265500
+                                                            }
+                                                  }
+                                        }
+                              },
+                              "2회": {
+                                        "최상급": {
+                                                  "package_id": 7,
+                                                  "location": "방콕",
+                                                  "rounds": "2회",
+                                                  "grade": "최상급",
+                                                  "courses": [
+                                                            "알파인 골프 앤 스포츠 클럽",
+                                                            "타이 컨트리 골프 앤 컨트리 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                4550,
+                                                                                4300
+                                                                      ],
+                                                                      "total": 8850
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                204750,
+                                                                                193500
+                                                                      ],
+                                                                      "total": 398250
+                                                            }
+                                                  }
+                                        },
+                                        "상급": {
+                                                  "package_id": 8,
+                                                  "location": "방콕",
+                                                  "rounds": "2회",
+                                                  "grade": "상급",
+                                                  "courses": [
+                                                            "피닉스 골드 골프 방콕",
+                                                            "로얄 방파인 골프 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2500,
+                                                                                2950
+                                                                      ],
+                                                                      "total": 5450
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                112500,
+                                                                                132750
+                                                                      ],
+                                                                      "total": 245250
+                                                            }
+                                                  }
+                                        },
+                                        "가성비": {
+                                                  "package_id": 9,
+                                                  "location": "방콕",
+                                                  "rounds": "2회",
+                                                  "grade": "가성비",
+                                                  "courses": [
+                                                            "람룩카 컨트리 클럽",
+                                                            "카스카타 골프 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2000,
+                                                                                2050
+                                                                      ],
+                                                                      "total": 4050
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                90000,
+                                                                                92250
+                                                                      ],
+                                                                      "total": 182250
+                                                            }
+                                                  }
+                                        }
+                              }
+                    },
+                    "파타야": {
+                              "4회": {
+                                        "최상급": {
+                                                  "package_id": 10,
+                                                  "location": "파타야",
+                                                  "rounds": "4회",
+                                                  "grade": "최상급",
+                                                  "courses": [
+                                                            "람차방 인터내셔널 컨트리 클럽",
+                                                            "시암 컨트리 클럽 플랜테이션 코스",
+                                                            "치찬 골프 리조트",
+                                                            "시암 컨트리 클럽 올드코스"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                3750,
+                                                                                4860,
+                                                                                4600,
+                                                                                5360
+                                                                      ],
+                                                                      "total": 18570
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                168750,
+                                                                                218700,
+                                                                                207000,
+                                                                                241200
+                                                                      ],
+                                                                      "total": 835650
+                                                            }
+                                                  }
+                                        },
+                                        "상급": {
+                                                  "package_id": 11,
+                                                  "location": "파타야",
+                                                  "rounds": "4회",
+                                                  "grade": "상급",
+                                                  "courses": [
+                                                            "파타나 골프 클럽 앤 리조트",
+                                                            "피닉스 골드 골프 앤 컨트리 클럽",
+                                                            "브라파 골프 앤 리조트",
+                                                            "세인트 앤드류스 2000 골프 코스"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2550,
+                                                                                2650,
+                                                                                2550,
+                                                                                2700
+                                                                      ],
+                                                                      "total": 10450
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                114750,
+                                                                                119250,
+                                                                                114750,
+                                                                                121500
+                                                                      ],
+                                                                      "total": 470250
+                                                            }
+                                                  }
+                                        },
+                                        "가성비": {
+                                                  "package_id": 12,
+                                                  "location": "파타야",
+                                                  "rounds": "4회",
+                                                  "grade": "가성비",
+                                                  "courses": [
+                                                            "카오 키여우 골프 클럽",
+                                                            "이스턴 스타 골프 클럽",
+                                                            "방프라 인터내셔널 골프 클럽",
+                                                            "트레저 힐 앤 골프 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                1600,
+                                                                                1700,
+                                                                                1750,
+                                                                                1600
+                                                                      ],
+                                                                      "total": 6650
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                72000,
+                                                                                76500,
+                                                                                78750,
+                                                                                72000
+                                                                      ],
+                                                                      "total": 299250
+                                                            }
+                                                  }
+                                        }
+                              },
+                              "3회": {
+                                        "최상급": {
+                                                  "package_id": 13,
+                                                  "location": "파타야",
+                                                  "rounds": "3회",
+                                                  "grade": "최상급",
+                                                  "courses": [
+                                                            "람차방 인터내셔널 컨트리 클럽",
+                                                            "치찬 골프 리조트",
+                                                            "시암 컨트리 클럽 올드코스"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                3750,
+                                                                                4600,
+                                                                                5360
+                                                                      ],
+                                                                      "total": 13710
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                168750,
+                                                                                207000,
+                                                                                241200
+                                                                      ],
+                                                                      "total": 616950
+                                                            }
+                                                  }
+                                        },
+                                        "상급": {
+                                                  "package_id": 14,
+                                                  "location": "파타야",
+                                                  "rounds": "3회",
+                                                  "grade": "상급",
+                                                  "courses": [
+                                                            "파타나 골프 클럽 앤 리조트",
+                                                            "피닉스 골드 골프 앤 컨트리 클럽",
+                                                            "브라파 골프 앤 리조트"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2550,
+                                                                                2650,
+                                                                                2550
+                                                                      ],
+                                                                      "total": 7750
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                114750,
+                                                                                119250,
+                                                                                114750
+                                                                      ],
+                                                                      "total": 348750
+                                                            }
+                                                  }
+                                        },
+                                        "가성비": {
+                                                  "package_id": 15,
+                                                  "location": "파타야",
+                                                  "rounds": "3회",
+                                                  "grade": "가성비",
+                                                  "courses": [
+                                                            "카오 키여우 골프 클럽",
+                                                            "이스턴 스타 골프 클럽",
+                                                            "방프라 인터내셔널 골프 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                1600,
+                                                                                1700,
+                                                                                1750
+                                                                      ],
+                                                                      "total": 5050
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                72000,
+                                                                                76500,
+                                                                                78750
+                                                                      ],
+                                                                      "total": 227250
+                                                            }
+                                                  }
+                                        }
+                              },
+                              "2회": {
+                                        "최상급": {
+                                                  "package_id": 16,
+                                                  "location": "파타야",
+                                                  "rounds": "2회",
+                                                  "grade": "최상급",
+                                                  "courses": [
+                                                            "람차방 인터내셔널 컨트리 클럽",
+                                                            "시암 컨트리 클럽 올드코스"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                3750,
+                                                                                5360
+                                                                      ],
+                                                                      "total": 9110
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                168750,
+                                                                                241200
+                                                                      ],
+                                                                      "total": 409950
+                                                            }
+                                                  }
+                                        },
+                                        "상급": {
+                                                  "package_id": 17,
+                                                  "location": "파타야",
+                                                  "rounds": "2회",
+                                                  "grade": "상급",
+                                                  "courses": [
+                                                            "파타나 골프 클럽 앤 리조트",
+                                                            "피닉스 골드 골프 앤 컨트리 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                2550,
+                                                                                2650
+                                                                      ],
+                                                                      "total": 5200
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                114750,
+                                                                                119250
+                                                                      ],
+                                                                      "total": 234000
+                                                            }
+                                                  }
+                                        },
+                                        "가성비": {
+                                                  "package_id": 18,
+                                                  "location": "파타야",
+                                                  "rounds": "2회",
+                                                  "grade": "가성비",
+                                                  "courses": [
+                                                            "카오 키여우 골프 클럽",
+                                                            "이스턴 스타 골프 클럽"
+                                                  ],
+                                                  "pricing": {
+                                                            "baht": {
+                                                                      "green_cart_caddie": [
+                                                                                1600,
+                                                                                1700
+                                                                      ],
+                                                                      "total": 3300
+                                                            },
+                                                            "krw": {
+                                                                      "green_cart_caddie": [
+                                                                                72000,
+                                                                                76500
+                                                                      ],
+                                                                      "total": 148500
+                                                            }
+                                                  }
+                                        }
+                              }
+                    }
+          },
+          "search_example": {
+                    "usage": "golf_packages['방콕']['2회']['상급'] → package_id: 8",
+                    "description": "지역, 라운드 수, 등급으로 중첩된 구조를 통해 원하는 패키지를 쉽게 검색할 수 있습니다."
+          }
+}

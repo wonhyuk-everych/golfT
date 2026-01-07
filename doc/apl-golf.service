@@ -1,0 +1,28 @@
+[Unit]
+Description=APL Golf Nuxt3 Service
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Adjust this to the user that owns the project directory
+User=ubuntu
+WorkingDirectory=/home/ubuntu/apl_golf
+Environment=NODE_ENV=production
+Environment=HOST=0.0.0.0
+Environment=PORT=3000
+# Make sure PATH has node/npm if not in default PATH
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+# Run the project start script (handles install, build, port cleanup, and start)
+ExecStart=/bin/bash -lc "/home/ubuntu/apl_golf/start.sh"
+Restart=always
+RestartSec=5
+# Optional: increase file descriptor limit
+LimitNOFILE=65535
+
+# Log to journald; view with: journalctl -u apl-golf -f
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
