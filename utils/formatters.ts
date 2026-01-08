@@ -147,49 +147,43 @@ export function formatTimeToAmPm(time: string): string {
   return `${period} ${hour}`;
 }
 
+// Format date to display in localized format
 export function formatDateLocale(dateString: string, locale: string = 'ko') {
   if (!dateString) return ''
-  
-  const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
+
+  const match = dateString.match(/(\d{4})[./-](\d{1,2})[./-](\d{1,2})/)
+
+  let year: number
+  let month: number
+  let day: number
+
+  if (match) {
+    year = parseInt(match[1], 10)
+    month = parseInt(match[2], 10)
+    day = parseInt(match[3], 10)
+  } else {
+    const fallback = new Date(dateString)
+    if (Number.isNaN(fallback.getTime())) return ''
+
+    year = fallback.getUTCFullYear()
+    month = fallback.getUTCMonth() + 1
+    day = fallback.getUTCDate()
+  }
+
+  const monthStr = String(month).padStart(2, '0')
+  const dayStr = String(day).padStart(2, '0')
+
+  const utcDate = new Date(Date.UTC(year, month - 1, day))
+  const dayIndex = utcDate.getUTCDay()
 
   if (locale === 'ko') {
     // Korean format: YYYY.MM.DD (요일)
-    
-    // Get day of week in Korean
-    const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
-    
-    return `${year}.${month}.${day} (${dayOfWeek})`
+    const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][dayIndex]
+    return `${year}.${monthStr}.${dayStr} (${dayOfWeek})`
   } else {
     // English format: MMM DD, YYYY
-    const dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]
-    return `${year}-${month}-${day} (${dayOfWeek})`
-  }
-}
-
-// Format date to display in localized format
-export function formatDateBookingDay(dateString: string, locale: string = 'ko') {
-  if (!dateString) return ''
-  
-  // UTC로 온 값을 KST(Asia/Seoul)로 변환
-  const utcMoment = moment.utc(dateString)
-  const kstMoment = utcMoment.tz('Asia/Seoul')
-  
-  const year = kstMoment.year()
-  const month = String(kstMoment.month() + 1).padStart(2, '0') // moment는 0-11, +1 필요
-  const day = String(kstMoment.date()).padStart(2, '0')
-  const dayOfWeekIndex = kstMoment.day() // 0(일) ~ 6(토)
-
-  if (locale === 'ko') {
-    // Korean format: YYYY.MM.DD (요일)
-    const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][dayOfWeekIndex]
-    return `${year}.${month}.${day} (${dayOfWeek})`
-  } else {
-    // English format: YYYY-MM-DD (요일)
-    const dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeekIndex]
-    return `${year}-${month}-${day} (${dayOfWeek})`
+    const dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayIndex]
+    return `${year}-${monthStr}-${dayStr} (${dayOfWeek})`
   }
 }
 

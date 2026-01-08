@@ -32,7 +32,7 @@ export default defineEventHandler(async (event): Promise<Response> => {
       const [rows]: any = await pool.query(
         `SELECT
           RG.reservation_golf_idx AS product_idx,
-          RG.reservation_date AS reservation_date,
+          DATE_FORMAT(RG.reservation_date, '%Y-%m-%d') AS reservation_date,
           RG.number_of_reservation AS number_of_reservation,
           (
           CASE

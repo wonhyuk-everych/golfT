@@ -109,7 +109,7 @@ export default defineEventHandler(async (event) => {
       sql = `
         SELECT
           RG.reservation_golf_idx AS product_idx,
-          RG.reservation_date,
+          DATE_FORMAT(RG.reservation_date, '%Y-%m-%d') AS reservation_date,
           (
           CASE
             WHEN RG.golf_price_type = 'weekday' THEN (SELECT start_time FROM golf_course_time_price CTP WHERE RG.golf_time_price_idx = CTP.golf_time_price_idx)

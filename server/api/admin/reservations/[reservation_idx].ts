@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const member = master ? { member_idx: master.member_idx, name: master.name_kr, user_id: master.id } : null
 
   // 골프장
-  const [golf] = await pool.query(`SELECT rg.*, c.name_kr FROM reservation_golf rg LEFT JOIN golf_course c ON rg.course_idx = c.course_idx WHERE reservation_idx = ?`, [reservation_idx])
+  const [golf] = await pool.query(`SELECT DATE_FORMAT(rg.reservation_date, '%Y-%m-%d') as reservation_date_str, rg.*, c.name_kr FROM reservation_golf rg LEFT JOIN golf_course c ON rg.course_idx = c.course_idx WHERE reservation_idx = ?`, [reservation_idx])
   
   // 골프장 예약 시간 정보 가져오기
   const golfWithTimes = await Promise.all((golf as any[]).map(async (g) => {
