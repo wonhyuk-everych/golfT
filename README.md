@@ -92,3 +92,52 @@ sudo certbot renew --dry-run
 ### https 인증서 자동 갱신 설정
 sudo crontab -e
 0 3 1 * * /usr/bin/certbot renew --renew-hook="sudo service nginx restart"
+
+
+
+
+TODO: DB 에서 가져올때 date 객체를 utc 로 변환해서 가져오는 문제
+      - check_in_date check_out_date reservation_date ...등등
+
+발견된 위치
+1. server/api/reservation/index.ts
+40번 줄: RH.check_in_date AS reservation_date — DATE_FORMAT 없음
+41번 줄: RH.check_out_date AS reservation_date2 — DATE_FORMAT 없음
+87번 줄: RC.start_date AS reservation_date (callvan) — DATE_FORMAT 없음
+2. server/api/reservation/[reservation_id].ts
+77번 줄: RH.check_in_date — DATE_FORMAT 없음
+78번 줄: RH.check_out_date — DATE_FORMAT 없음
+125번 줄: RC.reservation_date (caddy) — DATE_FORMAT 없음
+153번 줄: RC.start_date AS reservation_date (callvan) — DATE_FORMAT 없음
+154번 줄: RC.start_date (callvan) — DATE_FORMAT 없음
+155번 줄: RC.end_date (callvan) — DATE_FORMAT 없음
+58, 98, 138, 172번 줄: RM.reservation_date AS payment_date — DATE_FORMAT 없음
+3. server/api/admin/reservations/[reservation_idx].ts
+37번 줄: SELECT rh.*, ... — rh.*에 check_in_date, check_out_date 포함
+39번 줄: SELECT rc.*, ... (caddy) — rc.*에 reservation_date 포함
+41번 줄: SELECT rc.*, ... (callvan) — rc.*에 start_date, end_date 포함
+4. server/api/tournament/[id].ts
+67번 줄: E.start_date — DATE_FORMAT 없음 (end_date는 있음)
+총 14개 위치에서 DATE_FORMAT 없이 날짜 필드를 조회하고 있습니다.
+
+검증 및 수정 필요
+ex)
+   // 골프장
+-  const [golf] = await pool.query(`SELECT rg.*, c.name_kr FROM reservation_golf rg LEFT JOIN golf_course c ON rg.course_idx = c.course_idx WHERE reservation_idx = ?`, [reservation_idx])
++  const [golf] = await pool.query(`SELECT DATE_FORMAT(rg.reservation_date, '%Y-%m-%d') as reservation_date_str, rg.*, c.name_kr FROM reservation_golf rg LEFT JOIN golf_course c ON rg.course_idx = c.course_idx WHERE reservation_idx = ?`, [reservation_idx])
+
+그냥 날짜를 가져오면 utc로 변환해서 오기 때문에 y-m-d string 으로 가져와야함
+
+아니면 "ftpConfig 추가" 커밋으로 롤백 시킨다음
+ - formatDateLocale 자체를 formatDateBookingDay 함수 코드로 다 바꾸면 될듯
+ - 그대신 공통함수라 검증을 일일히 다 해봐야함.
+
+
+TODO: JSON.stringify 로 변환시 KST 기준 date객체들을 UTC 로 변환 시켜주면서 나는 버그 
+      - 주는 쪽에서 시간객체를 y-m-d 로 바꿔서 변환 해서 주거나
+      - 받는 쪽에서 다시 KST 로 바꾸거나
+
+검증 및 수정 필요
+ex)
+const checkinDate = moment(props.checkInDate).format("YYYY-MM-DD");
+const checkoutDate = moment(props.checkOutDate).format("YYYY-MM-DD");

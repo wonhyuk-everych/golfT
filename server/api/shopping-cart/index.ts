@@ -131,7 +131,7 @@ export default defineEventHandler(async (event): Promise<ShoppingCartResponse> =
           GC.name_en,
           GC.course_idx,
           (SELECT main_image_url FROM golf_course_image GI WHERE GI.course_idx = GC.course_idx LIMIT 1) AS Image_url,
-          SG.reservation_date,
+          DATE_FORMAT(SG.reservation_date, '%Y-%m-%d') AS reservation_date,
           CASE
             WHEN SG.golf_price_type = 'weekday' THEN (SELECT start_time FROM golf_course_time_price CTP WHERE SG.golf_time_price_idx = CTP.golf_time_price_idx)
             ELSE (SELECT start_time FROM golf_course_exception_price CEP WHERE SG.golf_exception_price_idx = CEP.golf_exception_price_idx)
@@ -181,9 +181,9 @@ export default defineEventHandler(async (event): Promise<ShoppingCartResponse> =
           H.name_kr,
           H.name_en,
           (SELECT image_url FROM hotel_image WHERE hotel_idx = H.hotel_idx AND use_yn = 'Y' LIMIT 1) AS Image_url,
-          SH.check_in_date,
+          DATE_FORMAT(SH.check_in_date, '%Y-%m-%d') AS check_in_date,
           H.check_in AS check_in_time,
-          SH.check_out_date,
+          DATE_FORMAT(SH.check_out_date, '%Y-%m-%d') AS check_out_date,
           H.check_out AS check_out_time,
           SH.hotel_room_idx AS room_idx,
           HR.room_name,
@@ -214,7 +214,7 @@ export default defineEventHandler(async (event): Promise<ShoppingCartResponse> =
           GC.name_kr,
           GC.name_en,
           (SELECT image_url FROM caddy_image WHERE caddy_idx = C.caddy_idx AND use_yn = 'Y' ORDER BY main_yn DESC, sort ASC LIMIT 1) AS Image_url,
-          SC.reservation_date,
+          DATE_FORMAT(SC.reservation_date, '%Y-%m-%d') AS reservation_date,
           SC.golf_course_time,
           SC.total_price
         FROM shopping_cart_caddy SC
