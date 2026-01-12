@@ -28,6 +28,10 @@ export interface GolfCourse {
   createdAt: string
   updatedAt: string
   
+  // 위치 좌표
+  latitude?: number | null
+  longitude?: number | null
+  
   // 그린피 정보
   weekdayGreenFee?: number | null
   weekdayGreenSaleFee?: number | null

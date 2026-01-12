@@ -59,6 +59,8 @@ export default defineEventHandler(async (event: H3Event): Promise<{ course: Golf
         c.double_play_date as doublePlayDate,
         c.created_at as createdAt,
         c.updated_at as updatedAt,
+        c.latitude,
+        c.longitude,
         p.weekday_green_fee as weekdayGreenFee,
         p.weekday_green_sale_fee as weekdayGreenSaleFee,
         p.weekend_green_fee as weekendGreenFee,
@@ -235,6 +237,8 @@ export default defineEventHandler(async (event: H3Event): Promise<{ course: Golf
           single_play_date = ?,
           double_play = ?,
           double_play_date = ?,
+          latitude = ?,
+          longitude = ?,
           updated_member_idx = ?
         WHERE course_idx = ?
       `
@@ -269,6 +273,8 @@ export default defineEventHandler(async (event: H3Event): Promise<{ course: Golf
         body.singlePlayDate,
         body.doublePlay,
         body.doublePlayDate,
+        body.latitude ?? null,
+        body.longitude ?? null,
         updatedMemberIdx,
         courseId
       ]
