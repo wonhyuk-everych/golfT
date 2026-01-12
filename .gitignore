@@ -25,3 +25,6 @@ logs
 
 # FTP credentials
 node_modules
+
+# Scripts config
+scripts/config.sh
