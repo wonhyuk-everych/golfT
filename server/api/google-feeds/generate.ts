@@ -31,6 +31,8 @@ interface GolfCourseRow extends RowDataPacket {
   airport_time: number;
   city_time: number;
   image: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   country_name?: string;
   country_name_en?: string;
   city_name?: string;
@@ -79,6 +81,8 @@ async function getAllGolfCourses(pool: Pool) {
       (SELECT city_name_en FROM country_code WHERE city_code = c.city_code LIMIT 1) as city_name_en,
       c.airport_time,
       c.city_time,
+      c.latitude,
+      c.longitude,
       gci.main_image_url as image
     FROM golf_course c
     LEFT JOIN golf_course_image gci ON c.course_idx = gci.course_idx
@@ -112,8 +116,8 @@ async function getAllGolfCourses(pool: Pool) {
       url: `https://golft.co.kr/course/${row.course_idx}`,
       description: rowData.description || "",
       min_duration_sec: 3600, // 1시간 고정
-      latitude: 37.5665, // 더미데이터 (서울 위도)
-      longitude: 126.9780, // 더미데이터 (서울 경도)
+      latitude: row.latitude ? Number(row.latitude) : 37.5665, // DB 값 또는 기본값 (서울 위도) - 숫자로 변환
+      longitude: row.longitude ? Number(row.longitude) : 126.9780, // DB 값 또는 기본값 (서울 경도) - 숫자로 변환
       // 추가 필드
       phone: row.phone || "",
       address: row.address || "",

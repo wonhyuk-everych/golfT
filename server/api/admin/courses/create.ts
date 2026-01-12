@@ -23,14 +23,38 @@ export default defineEventHandler(async (event) => {
   try {
     await connection.beginTransaction()
     // 1. 골프장 메인 정보 insert
-    const [result] = await connection.query(
-      `INSERT INTO golf_course (
-        name_kr, name_en, country_code, city_code, hole_count, round_start, address, phone, website, promotion_url, description, nearest_airport, airport_time, nearest_city, city_time, map_url, course_designer, course_holes, course_par, course_length, fairway_info, green_info, single_play, single_play_date, double_play, double_play_date, course_status, booking_status, created_at, created_member_idx, updated_at, updated_member_idx
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, NOW(), ?)`,
-      [
-        body.nameKr, body.nameEn, body.countryCode, body.cityCode, body.holeCount, body.roundStart, body.address, body.phone, body.website, body.promoUrl, body.description, body.nearbyAirport, body.airportTime, body.nearbyCity, body.cityTime, body.mapUrl, body.courseDesigner, body.courseHoles, body.coursePar, body.courseLength, body.fairwayInfo, body.greenInfo, body.singlePlay, body.singlePlayDate, body.doublePlay, body.doublePlayDate, body.courseStatus, body.bookingStatus, updatedMemberIdx, updatedMemberIdx
-      ]
-    )
+    // const [result] = await connection.query(
+    //   `INSERT INTO golf_course (
+    //     name_kr, name_en, country_code, city_code, hole_count, round_start, address, phone, website, promotion_url, 
+    //     description, nearest_airport, airport_time, nearest_city, city_time, map_url, course_designer, course_holes, course_par, course_length, 
+    //     fairway_info, green_info, single_play, single_play_date, double_play, double_play_date, course_status, booking_status, created_at, created_member_idx, 
+    //     updated_at, updated_member_idx
+    //   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+    //             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+    //             ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, NOW(), ?)`,
+    //   [
+    //     body.nameKr, body.nameEn, body.countryCode, body.cityCode, body.holeCount, body.roundStart, body.address, body.phone, body.website, body.promoUrl, 
+    //     body.description, body.nearbyAirport, body.airportTime, body.nearbyCity, body.cityTime, body.mapUrl, body.courseDesigner, body.courseHoles, body.coursePar, body.courseLength, 
+    //     body.fairwayInfo, body.greenInfo, body.singlePlay, body.singlePlayDate, body.doublePlay, body.doublePlayDate, body.courseStatus, body.bookingStatus, updatedMemberIdx, updatedMemberIdx
+    //   ]
+    // )
+      const [result] = await connection.query(
+        `INSERT INTO golf_course (
+          name_kr, name_en, country_code, city_code, hole_count, round_start, address, phone, website, promotion_url, 
+          description, nearest_airport, airport_time, nearest_city, city_time, map_url, course_designer, course_holes, course_par, course_length, 
+          fairway_info, green_info, single_play, single_play_date, double_play, double_play_date, course_status, booking_status, latitude, longitude, 
+          created_at, created_member_idx, updated_at, updated_member_idx
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                  NOW(), ?, NOW(), ?)`,
+        [
+          body.nameKr, body.nameEn, body.countryCode, body.cityCode, body.holeCount, body.roundStart, body.address, body.phone, body.website, body.promoUrl, 
+          body.description, body.nearbyAirport, body.airportTime, body.nearbyCity, body.cityTime, body.mapUrl, body.courseDesigner, body.courseHoles, body.coursePar, body.courseLength, 
+          body.fairwayInfo, body.greenInfo, body.singlePlay, body.singlePlayDate, body.doublePlay, body.doublePlayDate, body.courseStatus, body.bookingStatus, body.latitude ?? null, body.longitude ?? null, 
+          updatedMemberIdx, updatedMemberIdx
+        ]
+      )
     const courseIdx = result.insertId
 
     // 3. 이미지 정보 insert
