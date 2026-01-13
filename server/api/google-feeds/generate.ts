@@ -265,7 +265,8 @@ async function generateGoogleFeeds(
         entity_id: course.entity_id,
         name: course.name_kr,
         telephone: telephone || undefined,
-        url: course.url,
+        // url: course.url,
+        url: 'https://golft.co.kr',
         location: {
           latitude: course.latitude,
           longitude: course.longitude,
@@ -322,7 +323,7 @@ async function generateGoogleFeeds(
             currency_code: "KRW",
           },
         },
-        action_link: [{ url: course.url }],
+        // action_link: [{ url: course.url }], // 
         service_duration: {
           duration_interpretation: "INTERPRETATION_EXACT",
           min_duration_sec: course.min_duration_sec,
