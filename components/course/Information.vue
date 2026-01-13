@@ -12,6 +12,7 @@
             <div class="flex flex-col w-full gap-0.5">
               <h1 class="text-text-primary text-2xl w-full font-bold">{{ course.name_kr }}</h1>
               <p class="text-text-secondary text-base w-full">{{ course.name_en }}</p>
+              <p class="text-text-secondary text-sm w-full">{{ course.address }}</p>
             </div>
             <!-- 찜하기 버튼 -->
             <WishButton 
