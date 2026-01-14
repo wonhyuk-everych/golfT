@@ -49,7 +49,7 @@ async function getAllGolfCourses(pool: Pool) {
   const countQuery = `
     SELECT COUNT(*) as total
     FROM golf_course c
-    WHERE c.course_status = 'Y'
+    WHERE c.course_status = 'Y' AND c.booking_status = 'Y'
   `;
   const [countRows] = (await pool.query(countQuery)) as [
     CountRow[],
@@ -87,7 +87,7 @@ async function getAllGolfCourses(pool: Pool) {
     FROM golf_course c
     LEFT JOIN golf_course_image gci ON c.course_idx = gci.course_idx
     LEFT JOIN golf_course_monthly_price p ON c.course_idx = p.course_idx AND p.target_year = DATE_FORMAT(NOW(), '%Y') AND p.target_month = DATE_FORMAT(NOW(), '%m')
-    WHERE c.course_status = 'Y'
+    WHERE c.course_status = 'Y' AND c.booking_status = 'Y'
     ORDER BY c.created_at DESC
   `;
 
