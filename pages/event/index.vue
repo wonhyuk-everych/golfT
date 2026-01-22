@@ -56,8 +56,8 @@
             class="event-item cursor-pointer"
             @click="navigateToEventDetail(event.event_idx)"
           >
-            <div class="event-image-container w-full h-[110px] overflow-hidden rounded-lg">
-              <img :src="event.imageUrl" alt="이벤트 이미지" class="w-full h-full object-cover">
+            <div class="event-image-container w-full h-[110px] md:h-[360px] overflow-hidden rounded-lg md:bg-black/10">
+              <img :src="event.imageUrl" alt="이벤트 이미지" class="w-full h-full object-cover md:object-contain">
             </div>
             <!-- 상세보기 컬럼(버튼/링크 등) 제거됨 -->
           </div>
@@ -74,8 +74,8 @@
             class="event-item cursor-pointer"
             @click="navigateToEventDetail(event.event_idx)"
           >
-            <div class="event-image-container w-full h-[110px] overflow-hidden rounded-lg relative">
-              <img :src="event.imageUrl" alt="이벤트 이미지" class="w-full h-full object-cover opacity-70">
+            <div class="event-image-container w-full h-[110px] md:h-[360px] overflow-hidden rounded-lg relative md:bg-black/10">
+              <img :src="event.imageUrl" alt="이벤트 이미지" class="w-full h-full object-cover md:object-contain opacity-70">
               <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
                 <span class="text-white font-bold text-lg">{{ $t('event.endedEvent') }}</span>
               </div>
