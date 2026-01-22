@@ -1,5 +1,6 @@
 import { defineEventHandler, setResponseStatus } from "h3";
 import { getPool, testConnection } from "~/server/utils/db";
+import { getBartExchangeRate } from "~/utils/exchangeRateCache";
 import type { RowDataPacket, FieldPacket } from "mysql2";
 import type { Pool } from "mysql2/promise";
 import { writeFile, mkdir, readdir, stat, rename } from "fs/promises";
@@ -166,6 +167,15 @@ async function generateGoogleFeeds(
   outputDir?: string
 ) {
   const timestamp = Math.floor(Date.now() / 1000);
+  const partSuffix = "0001"; // 단일 파일로 업로드하더라도 예시 스펙(_0001)과 동일하게 유지
+
+  // 파일명 규칙 (예시 스펙에 맞춤: <feed>_<timestamp>_0001.json, descriptor는 <feed>_<timestamp>.filesetdesc.json)
+  const actionDataFile = `action_${timestamp}_${partSuffix}.json`;
+  const actionDescFile = `action_${timestamp}.filesetdesc.json`;
+  const entityDataFile = `entity_${timestamp}_${partSuffix}.json`;
+  const entityDescFile = `entity_${timestamp}.filesetdesc.json`;
+  const serviceDataFile = `service_${timestamp}_${partSuffix}.json`;
+  const serviceDescFile = `service_${timestamp}.filesetdesc.json`;
 
   // 출력 디렉토리 경로 설정 (기본값: ~/google_feeds)
   const finalOutputDir = outputDir 
@@ -209,7 +219,7 @@ async function generateGoogleFeeds(
   const actionFilesetDesc = {
     generation_timestamp: timestamp,
     name: "reservewithgoogle.action.v2",
-    data_file: [`action_${timestamp}.json`],
+    data_file: [actionDataFile],
   };
 
   // 2. Action.json
@@ -226,7 +236,7 @@ async function generateGoogleFeeds(
   const entityFilesetDesc = {
     generation_timestamp: timestamp,
     name: "reservewithgoogle.entity",
-    data_file: [`entity_${timestamp}.json`],
+    data_file: [entityDataFile],
   };
 
   // 4. Entity.json
@@ -265,8 +275,8 @@ async function generateGoogleFeeds(
         entity_id: course.entity_id,
         name: course.name_kr,
         telephone: telephone || undefined,
-        // url: course.url,
-        url: 'https://golft.co.kr',
+        // entity feed는 대표 도메인으로 고정 (요청사항)
+        url: "https://golft.co.kr",
         location: {
           latitude: course.latitude,
           longitude: course.longitude,
@@ -286,33 +296,53 @@ async function generateGoogleFeeds(
   const serviceFilesetDesc = {
     generation_timestamp: timestamp,
     name: "glam.service.v0",
-    data_file: [`service_${timestamp}.json`],
+    data_file: [serviceDataFile],
   };
 
   // 6. Service.json
+  const bartExchangeRate = await getBartExchangeRate(); // KRW per 1 THB
+  if (!Number.isFinite(bartExchangeRate) || bartExchangeRate <= 0) {
+    console.warn(
+      "[Google Feeds] Invalid bart exchange rate. price_micros will be set to 0.",
+      { bartExchangeRate }
+    );
+  }
   const serviceData = {
     data: courses.map((course) => {
-      // 가격을 마이크로 단위로 변환 (원 단위 * 1,000,000)
-      const priceInWon = parseFloat(course.price) || 0;
-      const priceMicros = Math.round(priceInWon * 1000000);
+      // course.price는 THB(바트). bart_exchange_rate는 "KRW per 1 THB"로 사용(곱셈).
+      const priceInThb = parseFloat(course.price) || 0;
+      const priceMicros =
+        Number.isFinite(bartExchangeRate) && bartExchangeRate > 0
+          ? Math.trunc(priceInThb * bartExchangeRate)
+          : 0;
 
       return {
         merchant_id: course.merchant_id,
         service_id: `golft-service-${course.id}`,
         localized_service_name: {
-          value: "골프 티타임 예약",
-          localized_value: [{ locale: "ko", value: "골프 티타임 예약" }],
+          value: "Golf Course Reservation",
+          localized_value: [
+            { locale: "ko", value: "골프장 예약" },
+            { locale: "en", value: "Golf Course Reservation" },
+          ],
         },
         localized_service_category: {
           value: "Golf",
-          localized_value: [{ locale: "ko", value: "골프" }],
+          localized_value: [
+            { locale: "ko", value: "골프" },
+            { locale: "en", value: "Golf" },
+          ],
         },
         localized_service_description: {
-          value: course.description || "실시간 골프 티타임 예약 서비스",
+          value: course.description || "실시간 골프장 예약 서비스",
           localized_value: [
             {
               locale: "ko",
-              value: course.description || "실시간 골프 티타임 예약 서비스",
+              value: course.description || "실시간 골프장 예약 서비스",
+            },
+            {
+              locale: "en",
+              value: "Real-time golf course reservation service",
             },
           ],
         },
@@ -323,7 +353,8 @@ async function generateGoogleFeeds(
             currency_code: "KRW",
           },
         },
-        // action_link: [{ url: course.url }], // 
+        // action_link: [{ url: "" }],
+        action_link: [],
         service_duration: {
           duration_interpretation: "INTERPRETATION_EXACT",
           min_duration_sec: course.min_duration_sec,
@@ -335,39 +366,39 @@ async function generateGoogleFeeds(
 
   // 파일 쓰기
   await writeFile(
-    join(finalOutputDir, `action_${timestamp}.filesetdesc.json`),
+    join(finalOutputDir, actionDescFile),
     JSON.stringify(actionFilesetDesc, null, 2)
   );
   await writeFile(
-    join(finalOutputDir, `action_${timestamp}.json`),
+    join(finalOutputDir, actionDataFile),
     JSON.stringify(actionData, null, 2)
   );
   await writeFile(
-    join(finalOutputDir, `entity_${timestamp}.filesetdesc.json`),
+    join(finalOutputDir, entityDescFile),
     JSON.stringify(entityFilesetDesc, null, 2)
   );
   await writeFile(
-    join(finalOutputDir, `entity_${timestamp}.json`),
+    join(finalOutputDir, entityDataFile),
     JSON.stringify(entityData, null, 2)
   );
   await writeFile(
-    join(finalOutputDir, `service_${timestamp}.filesetdesc.json`),
+    join(finalOutputDir, serviceDescFile),
     JSON.stringify(serviceFilesetDesc, null, 2)
   );
   await writeFile(
-    join(finalOutputDir, `service_${timestamp}.json`),
+    join(finalOutputDir, serviceDataFile),
     JSON.stringify(serviceData, null, 2)
   );
 
   return {
     timestamp,
     files: [
-      `action_${timestamp}.filesetdesc.json`,
-      `action_${timestamp}.json`,
-      `entity_${timestamp}.filesetdesc.json`,
-      `entity_${timestamp}.json`,
-      `service_${timestamp}.filesetdesc.json`,
-      `service_${timestamp}.json`,
+      actionDescFile,
+      actionDataFile,
+      entityDescFile,
+      entityDataFile,
+      serviceDescFile,
+      serviceDataFile,
     ],
   };
 }

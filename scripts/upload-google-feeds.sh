@@ -170,16 +170,19 @@ log "SFTP로 파일 업로드 시작..."
 cd "$FEEDS_DIR" || error_exit "디렉토리 이동 실패: $FEEDS_DIR"
 
 # SFTP 배치 명령 생성
-SFTP_COMMANDS=$(cat <<EOF
-put action_${TIMESTAMP}.filesetdesc.json
-put action_${TIMESTAMP}.json
-put entity_${TIMESTAMP}.filesetdesc.json
-put entity_${TIMESTAMP}.json
-put service_${TIMESTAMP}.filesetdesc.json
-put service_${TIMESTAMP}.json
-bye
-EOF
-)
+# - API 응답의 files 배열 순서를 그대로 사용 (descriptor -> data 순서 유지)
+# - 파일명 규칙이 변경되어도 스크립트가 깨지지 않도록 하드코딩 제거
+SFTP_COMMANDS=""
+TEMP_SFTP_CMDS_FILE=$(mktemp)
+printf '%s\n' "$FILES" > "$TEMP_SFTP_CMDS_FILE"
+
+while IFS= read -r file || [ -n "$file" ]; do
+    [ -z "$file" ] && continue
+    SFTP_COMMANDS+="put $file"$'\n'
+done < "$TEMP_SFTP_CMDS_FILE"
+
+rm -f "$TEMP_SFTP_CMDS_FILE"
+SFTP_COMMANDS+="bye"$'\n'
 
 # SFTP 실행
 SFTP_OUTPUT=$(echo "$SFTP_COMMANDS" | sftp -P "$SFTP_PORT" -i "$SFTP_KEY" -b - "$SFTP_USER@$SFTP_HOST" 2>&1)
