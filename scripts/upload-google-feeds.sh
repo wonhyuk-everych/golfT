@@ -178,37 +178,54 @@ log "SFTP로 파일 업로드 시작..."
 cd "$FEEDS_DIR" || error_exit "디렉토리 이동 실패: $FEEDS_DIR"
 
 # SFTP 배치 명령 생성
-# - API 응답의 files 배열 순서를 그대로 사용 (descriptor -> data 순서 유지)
-# - 파일명 규칙이 변경되어도 스크립트가 깨지지 않도록 하드코딩 제거
-# - 큰 파일 업로드를 위해 임시 파일 사용 (stdin 대신)
+# - Ubuntu의 OpenSSH 8.9p1은 배치 모드에서 여러 파일을 한 번에 보낼 때 메시지 크기 제한(256KB)에 걸림
+# - macOS의 OpenSSH 10.0p2는 더 관대하므로 로컬에서는 작동하지만 서버에서는 실패
+# - 해결: 각 파일을 개별 SFTP 세션으로 업로드
 TEMP_SFTP_CMDS_FILE=$(mktemp)
 printf '%s\n' "$FILES" > "$TEMP_SFTP_CMDS_FILE"
 
-# SFTP 배치 명령 파일 생성
-TEMP_SFTP_BATCH_FILE=$(mktemp)
+# 각 파일을 개별 SFTP 세션으로 업로드 (Ubuntu 서버 호환성)
+UPLOAD_FAILED=0
+UPLOADED_COUNT=0
+SFTP_OUTPUT_ALL=""
+
 while IFS= read -r file || [ -n "$file" ]; do
     [ -z "$file" ] && continue
-    echo "put $file" >> "$TEMP_SFTP_BATCH_FILE"
+    
+    log "업로드 중: $file"
+    
+    # 각 파일마다 개별 SFTP 세션 생성 (메시지 크기 제한 회피)
+    TEMP_SFTP_BATCH_FILE=$(mktemp)
+    echo "put $file" > "$TEMP_SFTP_BATCH_FILE"
+    echo "bye" >> "$TEMP_SFTP_BATCH_FILE"
+    
+    SFTP_OUTPUT=$(sftp -P "$SFTP_PORT" -i "$SFTP_KEY" -b "$TEMP_SFTP_BATCH_FILE" "$SFTP_USER@$SFTP_HOST" 2>&1)
+    SFTP_EXIT_CODE=$?
+    
+    SFTP_OUTPUT_ALL+="$SFTP_OUTPUT"$'\n'
+    
+    rm -f "$TEMP_SFTP_BATCH_FILE"
+    
+    if [ $SFTP_EXIT_CODE -eq 0 ]; then
+        UPLOADED_COUNT=$((UPLOADED_COUNT + 1))
+        log "업로드 성공: $file"
+    else
+        UPLOAD_FAILED=1
+        log "업로드 실패: $file (exit code: $SFTP_EXIT_CODE)"
+        log "SFTP 출력: $SFTP_OUTPUT"
+    fi
 done < "$TEMP_SFTP_CMDS_FILE"
-echo "bye" >> "$TEMP_SFTP_BATCH_FILE"
 
 rm -f "$TEMP_SFTP_CMDS_FILE"
-
-# SFTP 실행 (임시 파일 사용으로 "Outbound message too long" 에러 방지)
-SFTP_OUTPUT=$(sftp -P "$SFTP_PORT" -i "$SFTP_KEY" -b "$TEMP_SFTP_BATCH_FILE" "$SFTP_USER@$SFTP_HOST" 2>&1)
-SFTP_EXIT_CODE=$?
-
-# 임시 파일 정리
-rm -f "$TEMP_SFTP_BATCH_FILE"
 
 # 원래 디렉토리로 복원
 cd "$ORIGINAL_DIR" || true
 
-if [ $SFTP_EXIT_CODE -eq 0 ]; then
+if [ $UPLOAD_FAILED -eq 0 ] && [ $UPLOADED_COUNT -eq $FILE_COUNT ]; then
     log "SFTP 업로드 성공"
-    log "SFTP 출력: $SFTP_OUTPUT"
-    success_exit "모든 파일이 성공적으로 업로드되었습니다 (timestamp: $TIMESTAMP, 파일 수: $FILE_COUNT)"
+    log "SFTP 출력: $SFTP_OUTPUT_ALL"
+    success_exit "모든 파일이 성공적으로 업로드되었습니다 (timestamp: $TIMESTAMP, 파일 수: $UPLOADED_COUNT)"
 else
-    log "SFTP 출력: $SFTP_OUTPUT"
-    error_exit "SFTP 업로드 실패 (exit code: $SFTP_EXIT_CODE)"
+    log "SFTP 출력: $SFTP_OUTPUT_ALL"
+    error_exit "SFTP 업로드 실패 (성공: $UPLOADED_COUNT/$FILE_COUNT)"
 fi
