@@ -136,6 +136,7 @@ import ToastMessage from '~/components/common/ToastMessage.vue'
 import { useRouter } from 'vue-router'
 import Divider from '~/components/common/Divider.vue'
 import { useExchangeRate } from '~/composables/useExchangeRate'
+import moment from "moment-timezone";
 
 const { formatPriceWithRate, calculatePriceWithRate } = useExchangeRate()
 
@@ -212,11 +213,14 @@ const finalPaymentAmount = computed(() => {
 
 const router = useRouter()
 
+const checkinDate = moment(props.checkInDate).format("YYYY-MM-DD");
+const checkoutDate = moment(props.checkOutDate).format("YYYY-MM-DD");
+
 const handleAddCart = async () => {
   const hotel = {
     hotelIdx: props.hotel?.hotel_idx,
-    checkinDate: props.checkInDate,
-    checkoutDate: props.checkOutDate,
+    checkinDate,
+    checkoutDate,
     roomCount: props.roomCount,
     adult: props.adult,
     children: props.children,
@@ -227,7 +231,7 @@ const handleAddCart = async () => {
     paidServices: selectedPaidServices.value.join(','),
     // 필요한 추가 정보 포함
   };
-
+  
   try {
     const response = await $fetch('/api/hotel/add-cart', {
       method: 'POST',
