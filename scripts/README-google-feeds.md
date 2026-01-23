@@ -18,13 +18,18 @@ vim scripts/config.sh
 
 ```bash
 # crontab 편집
-crontab -e
+sudo crontab -e
 
 # 매일 새벽 2시 실행
 0 2 * * * /home/ubuntu/apl_golf/scripts/upload-google-feeds.sh
 
 # 매일 오전 9시 실행
 0 9 * * * /home/ubuntu/apl_golf/scripts/upload-google-feeds.sh
+
+# 설정 확인
+sudo crontab -l
+
+# 참고: crontab 저장 후 cron이 자동으로 변경사항을 감지하므로 재시작 불필요
 ```
 
 ## 수동 실행 및 로그 확인
@@ -39,8 +44,12 @@ ls -lt ~/google_feeds/uploadResult_*.log | head -1 | awk '{print $NF}' | xargs t
 
 ## 주요 변경사항
 
-- **source 실행 호환성**: `source`로 실행해도 정상 동작하도록 수정
-- **Ubuntu 서버 호환성**: OpenSSH 8.9p1의 메시지 크기 제한 문제 해결 (각 파일을 개별 SFTP 세션으로 업로드)
+- **source 실행 호환성**: `source`로 실행해도 정상 동작하도록 수정 (`BASH_SOURCE` 사용)
+- **SFTP 메시지 크기 제한 해결**: OpenSSH 버전 차이로 인한 SFTP 프로토콜 메시지 크기 제한(256KB) 문제 해결
+  - **원인**: Ubuntu OpenSSH 8.9p1은 배치 모드에서 메시지 크기 제한을 엄격하게 적용
+  - **해결**: 파일을 50개 단위로 분할 처리 (`generate.ts`)
+  - **해결**: 각 파일을 개별 SFTP 세션으로 업로드 (`upload-google-feeds.sh`)
+- **파일 분할**: Google Feeds 파일이 50개 이상일 경우 자동으로 `_0001`, `_0002`, `_0003` 형식으로 분할
 
 ## 설정 파일
 
