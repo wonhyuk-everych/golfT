@@ -167,15 +167,7 @@ async function generateGoogleFeeds(
   outputDir?: string
 ) {
   const timestamp = Math.floor(Date.now() / 1000);
-  const partSuffix = "0001"; // 단일 파일로 업로드하더라도 예시 스펙(_0001)과 동일하게 유지
-
-  // 파일명 규칙 (예시 스펙에 맞춤: <feed>_<timestamp>_0001.json, descriptor는 <feed>_<timestamp>.filesetdesc.json)
-  const actionDataFile = `action_${timestamp}_${partSuffix}.json`;
-  const actionDescFile = `action_${timestamp}.filesetdesc.json`;
-  const entityDataFile = `entity_${timestamp}_${partSuffix}.json`;
-  const entityDescFile = `entity_${timestamp}.filesetdesc.json`;
-  const serviceDataFile = `service_${timestamp}_${partSuffix}.json`;
-  const serviceDescFile = `service_${timestamp}.filesetdesc.json`;
+  const CHUNK_SIZE = 50; // 파일당 최대 항목 수 (SFTP 메시지 크기 제한 회피)
 
   // 출력 디렉토리 경로 설정 (기본값: ~/google_feeds)
   const finalOutputDir = outputDir 
@@ -215,91 +207,64 @@ async function generateGoogleFeeds(
     console.warn("기존 파일 이동 중 오류 (계속 진행):", error);
   }
 
-  // 1. Action filesetdesc.json
-  const actionFilesetDesc = {
-    generation_timestamp: timestamp,
-    name: "reservewithgoogle.action.v2",
-    data_file: [actionDataFile],
-  };
+  // 데이터 준비
+  const actionDataItems = courses.map((course) => ({
+    entity_id: course.entity_id,
+    link_id: `golft-appointment-link-${course.id}`,
+    url: course.url,
+    actions: [{ appointment_info: {} }],
+  }));
 
-  // 2. Action.json
-  const actionData = {
-    data: courses.map((course) => ({
+  const entityDataItems = courses.map((course) => {
+    // 전화번호 포맷팅 (국가 코드 추가)
+    let telephone = course.phone || "";
+    if (telephone && !telephone.startsWith("+")) {
+      // 태국인 경우 +66 추가
+      if (course.country_code === "TH") {
+        telephone = telephone.replace(/^0/, "+66");
+      } else if (course.country_code === "KR") {
+        telephone = telephone.replace(/^0/, "+82");
+      }
+      if (!telephone.startsWith("+")) {
+        telephone = `+${telephone}`;
+      }
+    }
+
+    // 주소 파싱
+    const streetAddress = course.address || course.name_en || course.name_kr;
+    const locality = course.city_name_en || course.city_name || "";
+    const region = course.city_name_en || course.city_name || "";
+    const country = course.country_code || "";
+    
+    // 주소에서 postal_code 추출 (예: "Chon Buri 20150" -> "20150")
+    let postalCode = "";
+    if (course.address) {
+      const postalMatch = course.address.match(/\b(\d{5})\b/);
+      if (postalMatch) {
+        postalCode = postalMatch[1];
+      }
+    }
+
+    return {
       entity_id: course.entity_id,
-      link_id: `golft-appointment-link-${course.id}`,
-      url: course.url,
-      actions: [{ appointment_info: {} }],
-    })),
-  };
-
-  // 3. Entity filesetdesc.json
-  const entityFilesetDesc = {
-    generation_timestamp: timestamp,
-    name: "reservewithgoogle.entity",
-    data_file: [entityDataFile],
-  };
-
-  // 4. Entity.json
-  const entityData = {
-    data: courses.map((course) => {
-      // 전화번호 포맷팅 (국가 코드 추가)
-      let telephone = course.phone || "";
-      if (telephone && !telephone.startsWith("+")) {
-        // 태국인 경우 +66 추가
-        if (course.country_code === "TH") {
-          telephone = telephone.replace(/^0/, "+66");
-        } else if (course.country_code === "KR") {
-          telephone = telephone.replace(/^0/, "+82");
-        }
-        if (!telephone.startsWith("+")) {
-          telephone = `+${telephone}`;
-        }
-      }
-
-      // 주소 파싱
-      const streetAddress = course.address || course.name_en || course.name_kr;
-      const locality = course.city_name_en || course.city_name || "";
-      const region = course.city_name_en || course.city_name || "";
-      const country = course.country_code || "";
-      
-      // 주소에서 postal_code 추출 (예: "Chon Buri 20150" -> "20150")
-      let postalCode = "";
-      if (course.address) {
-        const postalMatch = course.address.match(/\b(\d{5})\b/);
-        if (postalMatch) {
-          postalCode = postalMatch[1];
-        }
-      }
-
-      return {
-        entity_id: course.entity_id,
-        name: course.name_kr,
-        telephone: telephone || undefined,
-        // entity feed는 대표 도메인으로 고정 (요청사항)
-        url: "https://golft.co.kr",
-        location: {
-          latitude: course.latitude,
-          longitude: course.longitude,
-          address: {
-            country: country,
-            region: region,
-            locality: locality,
-            street_address: streetAddress,
-            postal_code: postalCode,
-          },
+      name: course.name_kr,
+      telephone: telephone || undefined,
+      // entity feed는 대표 도메인으로 고정 (요청사항)
+      url: "https://golft.co.kr",
+      location: {
+        latitude: course.latitude,
+        longitude: course.longitude,
+        address: {
+          country: country,
+          region: region,
+          locality: locality,
+          street_address: streetAddress,
+          postal_code: postalCode,
         },
-      };
-    }),
-  };
+      },
+    };
+  });
 
-  // 5. Service filesetdesc.json
-  const serviceFilesetDesc = {
-    generation_timestamp: timestamp,
-    name: "glam.service.v0",
-    data_file: [serviceDataFile],
-  };
-
-  // 6. Service.json
   const bartExchangeRate = await getBartExchangeRate(); // KRW per 1 THB
   if (!Number.isFinite(bartExchangeRate) || bartExchangeRate <= 0) {
     console.warn(
@@ -307,100 +272,168 @@ async function generateGoogleFeeds(
       { bartExchangeRate }
     );
   }
-  const serviceData = {
-    data: courses.map((course) => {
-      // course.price는 THB(바트). bart_exchange_rate는 "KRW per 1 THB"로 사용(곱셈).
-      const priceInThb = parseFloat(course.price) || 0;
-      const priceMicros =
-        Number.isFinite(bartExchangeRate) && bartExchangeRate > 0
-          ? Math.trunc(priceInThb * bartExchangeRate)
-          : 0;
+  const serviceDataItems = courses.map((course) => {
+    // course.price는 THB(바트). bart_exchange_rate는 "KRW per 1 THB"로 사용(곱셈).
+    const priceInThb = parseFloat(course.price) || 0;
+    const priceMicros =
+      Number.isFinite(bartExchangeRate) && bartExchangeRate > 0
+        ? Math.trunc(priceInThb * bartExchangeRate)
+        : 0;
 
-      return {
-        merchant_id: course.merchant_id,
-        service_id: `golft-service-${course.id}`,
-        localized_service_name: {
-          value: "Golf Course Reservation",
-          localized_value: [
-            { locale: "ko", value: "골프장 예약" },
-            { locale: "en", value: "Golf Course Reservation" },
-          ],
-        },
-        localized_service_category: {
-          value: "Golf",
-          localized_value: [
-            { locale: "ko", value: "골프" },
-            { locale: "en", value: "Golf" },
-          ],
-        },
-        localized_service_description: {
-          value: course.description || "실시간 골프장 예약 서비스",
-          localized_value: [
-            {
-              locale: "ko",
-              value: course.description || "실시간 골프장 예약 서비스",
-            },
-            {
-              locale: "en",
-              value: "Real-time golf course reservation service",
-            },
-          ],
-        },
-        service_price: {
-          price_interpretation: "INTERPRETATION_EXACT",
-          min_price: {
-            price_micros: priceMicros,
-            currency_code: "KRW",
+    return {
+      merchant_id: course.merchant_id,
+      service_id: `golft-service-${course.id}`,
+      localized_service_name: {
+        value: "Golf Course Reservation",
+        localized_value: [
+          { locale: "ko", value: "골프장 예약" },
+          { locale: "en", value: "Golf Course Reservation" },
+        ],
+      },
+      localized_service_category: {
+        value: "Golf",
+        localized_value: [
+          { locale: "ko", value: "골프" },
+          { locale: "en", value: "Golf" },
+        ],
+      },
+      localized_service_description: {
+        value: course.description || "실시간 골프장 예약 서비스",
+        localized_value: [
+          {
+            locale: "ko",
+            value: course.description || "실시간 골프장 예약 서비스",
           },
+          {
+            locale: "en",
+            value: "Real-time golf course reservation service",
+          },
+        ],
+      },
+      service_price: {
+        price_interpretation: "INTERPRETATION_EXACT",
+        min_price: {
+          price_micros: priceMicros,
+          currency_code: "KRW",
         },
-        // action_link: [{ url: "" }],
-        action_link: [],
-        // action_link: [{url:course.url}],
-        service_duration: {
-          duration_interpretation: "INTERPRETATION_EXACT",
-          min_duration_sec: course.min_duration_sec,
-        },
-        ranking_hint: { score: 1 },
-      };
-    }),
-  };
+      },
+      action_link: [],
+      service_duration: {
+        duration_interpretation: "INTERPRETATION_EXACT",
+        min_duration_sec: course.min_duration_sec,
+      },
+      ranking_hint: { score: 1 },
+    };
+  });
 
-  // 파일 쓰기
+  // 데이터를 청크로 나누는 헬퍼 함수
+  function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+    const chunks: T[][] = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
+  // 파일명 생성 헬퍼 함수
+  function generateFileName(type: string, partNumber: number): string {
+    const partSuffix = String(partNumber).padStart(4, "0");
+    return `${type}_${timestamp}_${partSuffix}.json`;
+  }
+
+  // Action 파일 생성
+  const actionChunks = chunkArray(actionDataItems, CHUNK_SIZE);
+  const actionDataFiles: string[] = [];
+  for (let i = 0; i < actionChunks.length; i++) {
+    const fileName = generateFileName("action", i + 1);
+    actionDataFiles.push(fileName);
+    await writeFile(
+      join(finalOutputDir, fileName),
+      JSON.stringify({ data: actionChunks[i] }, null, 2)
+    );
+  }
+
+  // Entity 파일 생성
+  const entityChunks = chunkArray(entityDataItems, CHUNK_SIZE);
+  const entityDataFiles: string[] = [];
+  for (let i = 0; i < entityChunks.length; i++) {
+    const fileName = generateFileName("entity", i + 1);
+    entityDataFiles.push(fileName);
+    await writeFile(
+      join(finalOutputDir, fileName),
+      JSON.stringify({ data: entityChunks[i] }, null, 2)
+    );
+  }
+
+  // Service 파일 생성
+  const serviceChunks = chunkArray(serviceDataItems, CHUNK_SIZE);
+  const serviceDataFiles: string[] = [];
+  for (let i = 0; i < serviceChunks.length; i++) {
+    const fileName = generateFileName("service", i + 1);
+    serviceDataFiles.push(fileName);
+    await writeFile(
+      join(finalOutputDir, fileName),
+      JSON.stringify({ data: serviceChunks[i] }, null, 2)
+    );
+  }
+
+  // Filesetdesc 파일 생성
+  const actionDescFile = `action_${timestamp}.filesetdesc.json`;
+  const entityDescFile = `entity_${timestamp}.filesetdesc.json`;
+  const serviceDescFile = `service_${timestamp}.filesetdesc.json`;
+
   await writeFile(
     join(finalOutputDir, actionDescFile),
-    JSON.stringify(actionFilesetDesc, null, 2)
+    JSON.stringify(
+      {
+        generation_timestamp: timestamp,
+        name: "reservewithgoogle.action.v2",
+        data_file: actionDataFiles,
+      },
+      null,
+      2
+    )
   );
-  await writeFile(
-    join(finalOutputDir, actionDataFile),
-    JSON.stringify(actionData, null, 2)
-  );
+
   await writeFile(
     join(finalOutputDir, entityDescFile),
-    JSON.stringify(entityFilesetDesc, null, 2)
+    JSON.stringify(
+      {
+        generation_timestamp: timestamp,
+        name: "reservewithgoogle.entity",
+        data_file: entityDataFiles,
+      },
+      null,
+      2
+    )
   );
-  await writeFile(
-    join(finalOutputDir, entityDataFile),
-    JSON.stringify(entityData, null, 2)
-  );
+
   await writeFile(
     join(finalOutputDir, serviceDescFile),
-    JSON.stringify(serviceFilesetDesc, null, 2)
+    JSON.stringify(
+      {
+        generation_timestamp: timestamp,
+        name: "glam.service.v0",
+        data_file: serviceDataFiles,
+      },
+      null,
+      2
+    )
   );
-  await writeFile(
-    join(finalOutputDir, serviceDataFile),
-    JSON.stringify(serviceData, null, 2)
-  );
+
+  // 반환할 파일 목록 (descriptor 파일 먼저, 그 다음 data 파일들)
+  const allFiles: string[] = [
+    entityDescFile,
+    ...entityDataFiles,
+    actionDescFile,
+    ...actionDataFiles,
+    serviceDescFile,
+    ...serviceDataFiles,
+  ];
 
   return {
     timestamp,
-    files: [
-      entityDescFile,
-      entityDataFile,
-      actionDescFile,
-      actionDataFile,
-      serviceDescFile,
-      serviceDataFile,
-    ],
+    files: allFiles,
   };
 }
 
