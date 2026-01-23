@@ -355,6 +355,7 @@ async function generateGoogleFeeds(
         },
         // action_link: [{ url: "" }],
         action_link: [],
+        // action_link: [{url:course.url}],
         service_duration: {
           duration_interpretation: "INTERPRETATION_EXACT",
           min_duration_sec: course.min_duration_sec,
@@ -393,10 +394,10 @@ async function generateGoogleFeeds(
   return {
     timestamp,
     files: [
-      actionDescFile,
-      actionDataFile,
       entityDescFile,
       entityDataFile,
+      actionDescFile,
+      actionDataFile,
       serviceDescFile,
       serviceDataFile,
     ],
