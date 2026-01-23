@@ -6,7 +6,15 @@ set -o pipefail
 # 사용법: ./scripts/upload-google-feeds.sh
 
 # 스크립트 디렉토리 (설정 파일 로드용)
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# source로 실행될 때를 대비하여 BASH_SOURCE 사용
+if [ -n "${BASH_SOURCE[0]}" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+elif [ -n "$0" ] && [ "$0" != "-bash" ] && [ "$0" != "-zsh" ] && [ "$0" != "bash" ] && [ "$0" != "zsh" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+else
+    # source로 실행되고 BASH_SOURCE가 없는 경우 (sh 등), 현재 디렉토리 사용
+    SCRIPT_DIR="$(pwd)"
+fi
 
 # 원래 작업 디렉토리 저장 (스크립트 종료 후 복원하기 위해)
 ORIGINAL_DIR="$(pwd)"
@@ -172,21 +180,26 @@ cd "$FEEDS_DIR" || error_exit "디렉토리 이동 실패: $FEEDS_DIR"
 # SFTP 배치 명령 생성
 # - API 응답의 files 배열 순서를 그대로 사용 (descriptor -> data 순서 유지)
 # - 파일명 규칙이 변경되어도 스크립트가 깨지지 않도록 하드코딩 제거
-SFTP_COMMANDS=""
+# - 큰 파일 업로드를 위해 임시 파일 사용 (stdin 대신)
 TEMP_SFTP_CMDS_FILE=$(mktemp)
 printf '%s\n' "$FILES" > "$TEMP_SFTP_CMDS_FILE"
 
+# SFTP 배치 명령 파일 생성
+TEMP_SFTP_BATCH_FILE=$(mktemp)
 while IFS= read -r file || [ -n "$file" ]; do
     [ -z "$file" ] && continue
-    SFTP_COMMANDS+="put $file"$'\n'
+    echo "put $file" >> "$TEMP_SFTP_BATCH_FILE"
 done < "$TEMP_SFTP_CMDS_FILE"
+echo "bye" >> "$TEMP_SFTP_BATCH_FILE"
 
 rm -f "$TEMP_SFTP_CMDS_FILE"
-SFTP_COMMANDS+="bye"$'\n'
 
-# SFTP 실행
-SFTP_OUTPUT=$(echo "$SFTP_COMMANDS" | sftp -P "$SFTP_PORT" -i "$SFTP_KEY" -b - "$SFTP_USER@$SFTP_HOST" 2>&1)
+# SFTP 실행 (임시 파일 사용으로 "Outbound message too long" 에러 방지)
+SFTP_OUTPUT=$(sftp -P "$SFTP_PORT" -i "$SFTP_KEY" -b "$TEMP_SFTP_BATCH_FILE" "$SFTP_USER@$SFTP_HOST" 2>&1)
 SFTP_EXIT_CODE=$?
+
+# 임시 파일 정리
+rm -f "$TEMP_SFTP_BATCH_FILE"
 
 # 원래 디렉토리로 복원
 cd "$ORIGINAL_DIR" || true
