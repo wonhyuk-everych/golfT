@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# set -e 제거 (에러 시에도 계속 진행), set -u도 제거 (변수 미설정 허용)
 set -o pipefail
 
 # Google Feeds 생성 및 SFTP 업로드 스크립트

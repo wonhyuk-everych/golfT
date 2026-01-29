@@ -17,8 +17,8 @@ vim scripts/config.sh
 ## Cron 설정
 
 ```bash
-# crontab 편집
-sudo crontab -e
+# crontab 편집 (ubuntu 사용자로 실행 - sudo 사용 시 HOME 경로가 /root로 설정되어 문제 발생)
+crontab -e
 
 # 매일 새벽 2시 실행
 0 2 * * * /home/ubuntu/apl_golf/scripts/upload-google-feeds.sh
@@ -27,9 +27,10 @@ sudo crontab -e
 0 9 * * * /home/ubuntu/apl_golf/scripts/upload-google-feeds.sh
 
 # 설정 확인
-sudo crontab -l
+crontab -l
 
 # 참고: crontab 저장 후 cron이 자동으로 변경사항을 감지하므로 재시작 불필요
+# 주의: sudo crontab -e를 사용하면 HOME 경로가 /root로 설정되어 config.sh의 $HOME/google_feeds 경로가 잘못됩니다
 ```
 
 ## 수동 실행 및 로그 확인
