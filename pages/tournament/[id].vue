@@ -29,7 +29,7 @@
         
         <!-- 메인 이미지 슬라이더 -->
         <div v-if="tournamentData.image_main_list && tournamentData.image_main_list.length > 0">
-          <ImageSlider :images="mainImageList" />
+          <ImageSliderTournament :images="mainImageList" />
         </div>
         
         <!-- 타이틀과 가격 (피그마 디자인 기반) -->
@@ -158,7 +158,7 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
 import NavigationBar from '~/components/common/NavigationBar.vue'
-import ImageSlider from '~/components/common/ImageSlider.vue'
+import ImageSliderTournament from '~/components/common/ImageSliderTournament.vue'
 import imageUpload from '~/components/common/imageUpload.vue'
 import Footer from '~/components/common/Footer.vue'
 import DynamicForm from '~/components/tournament/DynamicForm.vue'
@@ -260,7 +260,7 @@ const isReserving = ref(false);
 // 이미지 업로드 에러 표시 상태
 const showImageError = ref(false);
 
-// ImageSlider 컴포넌트용 메인 이미지 리스트
+// ImageSliderTournament 컴포넌트용 메인 이미지 리스트
 const mainImageList = computed(() => {
   return tournamentData.value.image_main_list.map((url, index) => ({
     url: url,

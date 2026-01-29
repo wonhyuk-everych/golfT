@@ -67,6 +67,9 @@
             <div class="tournament-image-container w-full h-[110px] md:h-[360px] overflow-hidden rounded-lg md:bg-black/10">
               <img :src="tournament.imageUrl" alt="토너먼트 이미지" class="w-full h-full object-cover md:object-contain">
             </div>
+            <!-- <div class="tournament-image-container w-full h-[110px] overflow-hidden rounded-lg">
+              <img :src="tournament.imageUrl" alt="토너먼트 이미지" class="w-full h-full object-cover">
+            </div> -->
           </div>
         </div>
 
@@ -87,6 +90,12 @@
                 <span class="text-white font-bold text-lg">{{ $t('tournament.endedTournament') }}</span>
               </div>
             </div>
+            <!-- <div class="tournament-image-container w-full h-[110px] overflow-hidden rounded-lg relative">
+              <img :src="tournament.imageUrl" alt="토너먼트 이미지" class="w-full h-full object-cover opacity-70">
+              <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                <span class="text-white font-bold text-lg">{{ $t('tournament.endedTournament') }}</span>
+              </div>
+            </div> -->
           </div>
         </div>
       </div>
